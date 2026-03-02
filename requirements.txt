@@ -1,2 +1,2 @@
-streamlit
-openai
+-e streamlit==1.41.0
+requests==2.31.0
