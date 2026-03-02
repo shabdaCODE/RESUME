@@ -627,11 +627,7 @@ jd_input = st.text_area(
     placeholder="Paste the full job description including skills, responsibilities, and qualifications..."
 )
 
-col1, col2 = st.columns([2, 1])
-with col1:
-    generate_btn = st.button("✨ Generate Resume", type="primary", use_container_width=True)
-with col2:
-    show_latex = st.checkbox("Show LaTeX code", value=False)
+generate_btn = st.button("✨ Generate Resume", type="primary", use_container_width=True)
 
 if "latex" not in st.session_state:
     st.session_state.latex = None
@@ -692,9 +688,7 @@ if st.session_state.latex:
         st.warning("⚠️ pdflatex not available on this server.")
         st.info("👉 Copy the LaTeX code below → paste at **overleaf.com** → Download PDF")
 
-    if show_latex or not st.session_state.pdf_bytes:
-        st.subheader("📝 LaTeX Source Code")
-        st.code(st.session_state.latex, language="latex")
+    if not st.session_state.pdf_bytes:
         st.download_button(
             label="⬇️ Download LaTeX (.tex)",
             data=st.session_state.latex,
