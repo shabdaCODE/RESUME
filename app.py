@@ -1,5 +1,5 @@
 import streamlit as st
-import google.generativeai as genai
+from groq import Groq
 import subprocess
 import os
 import tempfile
@@ -13,12 +13,12 @@ st.caption("Paste a Job Description → get a tailored, ATS-friendly resume as a
 
 # ── Sidebar: API Key ──────────────────────────────────────────────────────────
 st.sidebar.header("⚙️ Settings")
-if "GEMINI_API_KEY" in st.secrets:
-    api_key = st.secrets["GEMINI_API_KEY"]
-    st.sidebar.success("Gemini API key loaded ✅")
+if "GROQ_API_KEY" in st.secrets:
+    api_key = st.secrets["GROQ_API_KEY"]
+    st.sidebar.success("Groq API key loaded ✅")
 else:
-    api_key = st.sidebar.text_input("🔑 Gemini API Key", type="password",
-                                     help="Get your free key at aistudio.google.com")
+    api_key = st.sidebar.text_input("🔑 Groq API Key", type="password",
+                                     help="Get your free key at console.groq.com")
 
 # ── Fixed candidate info ──────────────────────────────────────────────────────
 CANDIDATE_INFO = """
@@ -157,6 +157,7 @@ def compile_latex_to_pdf(latex_body: str):
             st.code(result.stdout[-3000:], language="text")
             return None
 
+# ── UI ────────────────────────────────────────────────────────────────────────
 jd_input = st.text_area(
     "📋 Paste the Job Description here",
     height=280,
@@ -176,27 +177,31 @@ if "pdf_bytes" not in st.session_state:
 
 if generate_btn:
     if not api_key:
-        st.warning("Please enter your Gemini API key in the sidebar.")
+        st.warning("⚠️ Please enter your Groq API key in the sidebar.")
     elif not jd_input.strip():
-        st.warning("Please paste a Job Description.")
+        st.warning("⚠️ Please paste a Job Description.")
     else:
-        with st.spinner("🤖 Generating ATS-optimized resume..."):
+        with st.spinner("⚡ Generating ATS-optimized resume..."):
             try:
-                genai.configure(api_key=api_key)
-                model = genai.GenerativeModel("gemini-2.0-flash")
-                response = model.generate_content(build_prompt(jd_input))
-                latex_body = response.text.strip()
+                client = Groq(api_key=api_key)
+                response = client.chat.completions.create(
+                    model="llama-3.1-8b-instant",
+                    messages=[{"role": "user", "content": build_prompt(jd_input)}],
+                    temperature=0.3,
+                    max_tokens=2500
+                )
+                latex_body = response.choices[0].message.content.strip()
                 latex_body = re.sub(r"```(latex)?", "", latex_body).strip()
                 latex_body = latex_body.replace("```", "").strip()
                 st.session_state.latex_body = latex_body
             except Exception as e:
-                st.error(f"Gemini API error: {e}")
+                st.error(f"Groq API error: {e}")
                 st.stop()
 
         with st.spinner("📄 Compiling PDF..."):
             check = subprocess.run(["which", "pdflatex"], capture_output=True)
             if check.returncode != 0:
-                st.warning("pdflatex not available. Copy the LaTeX code below and paste it at overleaf.com to get your PDF.")
+                st.warning("pdflatex not available on this server. Copy the LaTeX code below and paste it at overleaf.com to get your PDF.")
                 st.session_state.pdf_bytes = None
             else:
                 st.session_state.pdf_bytes = compile_latex_to_pdf(st.session_state.latex_body)
