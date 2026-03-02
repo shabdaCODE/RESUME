@@ -1,9 +1,3 @@
-🚀 JD → Resume App
-Step-by-step: Build & Deploy on Streamlit via GitHub
-
-0 / 7 steps completed
-This is your main Streamlit app. Paste a Job Description → get a tailored resume:
-
 import streamlit as st
 import openai
 
@@ -32,5 +26,3 @@ Write an ATS-friendly resume with: Summary, Skills, Experience, Education."""
         st.success("Resume Generated!")
         st.markdown(result)
         st.download_button("⬇ Download", result, file_name="resume.md")
-💡 Tip: You can swap OpenAI for Google Gemini or any other LLM API.
-Mark as Done
