@@ -183,7 +183,7 @@ if generate_btn:
         with st.spinner("🤖 Generating ATS-optimized resume..."):
             try:
                 genai.configure(api_key=api_key)
-                model = genai.GenerativeModel("gemini-1.5-flash")
+                model = genai.GenerativeModel("gemini-2.0-flash")
                 response = model.generate_content(build_prompt(jd_input))
                 latex_body = response.text.strip()
                 latex_body = re.sub(r"```(latex)?", "", latex_body).strip()
