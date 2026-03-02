@@ -5,9 +5,214 @@ import tempfile
 import re
 import requests
 
-st.set_page_config(page_title="Anurag's Resume Generator", page_icon="📄", layout="centered")
-st.title("📄 JD → ATS Resume Generator")
-st.caption("Rule-based • No API key needed • ATS-optimized")
+st.set_page_config(
+    page_title="Resume Generator for Anurag 🔥",
+    page_icon="🚀",
+    layout="centered"
+)
+
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Rajdhani:wght@500;600;700&display=swap');
+
+#MainMenu, footer, header { visibility: hidden; }
+.block-container { padding-top: 1rem !important; max-width: 800px; }
+
+.stApp {
+    background: #080810;
+    background-image:
+        radial-gradient(ellipse at 15% 15%, rgba(120,0,255,0.08) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 85%, rgba(0,200,150,0.07) 0%, transparent 55%),
+        repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(255,255,255,0.012) 50px, rgba(255,255,255,0.012) 51px),
+        repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(255,255,255,0.012) 50px, rgba(255,255,255,0.012) 51px);
+}
+
+.big-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(2.5rem, 7vw, 4.5rem);
+    line-height: 0.95;
+    letter-spacing: 4px;
+    text-align: center;
+    margin-bottom: 2px;
+    background: linear-gradient(120deg, #ff6b35 0%, #ffe66d 40%, #06ffa5 70%, #00aaff 100%);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: titleFlow 4s ease-in-out infinite alternate;
+}
+@keyframes titleFlow {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+.subtitle {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: #555;
+    text-align: center;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin: 4px 0 18px 0;
+}
+
+.joke-box {
+    background: linear-gradient(135deg, #0f0f1a, #141420);
+    border: 1px solid rgba(255,107,53,0.4);
+    border-left: 3px solid #ff6b35;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 0 0 20px 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: #c8b8a0;
+    line-height: 1.7;
+}
+.joke-tag {
+    color: #ff6b35;
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.section-head {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 0.95rem;
+    letter-spacing: 5px;
+    color: #06ffa5;
+    text-transform: uppercase;
+    margin: 18px 0 6px 0;
+}
+
+.stTextArea textarea {
+    background: #0d0d15 !important;
+    border: 1px solid #252535 !important;
+    border-radius: 8px !important;
+    color: #ddd !important;
+    font-family: 'Space Mono', monospace !important;
+    font-size: 0.8rem !important;
+    transition: border-color 0.3s, box-shadow 0.3s !important;
+    caret-color: #ff6b35;
+}
+.stTextArea textarea:focus {
+    border-color: #ff6b35 !important;
+    box-shadow: 0 0 0 1px rgba(255,107,53,0.3), 0 0 20px rgba(255,107,53,0.1) !important;
+}
+.stTextArea textarea::placeholder { color: #383848 !important; }
+
+.stButton > button {
+    background: linear-gradient(135deg, #ff6b35, #ff9a5c) !important;
+    color: #000 !important;
+    font-family: 'Bebas Neue', cursive !important;
+    font-size: 1.35rem !important;
+    letter-spacing: 4px !important;
+    border: none !important;
+    border-radius: 6px !important;
+    height: 54px !important;
+    width: 100% !important;
+    box-shadow: 0 0 20px rgba(255,107,53,0.35) !important;
+    transition: all 0.2s !important;
+}
+.stButton > button:hover {
+    transform: translateY(-2px) scale(1.01) !important;
+    box-shadow: 0 0 35px rgba(255,107,53,0.6) !important;
+    background: linear-gradient(135deg, #ff8c5a, #ffe66d) !important;
+}
+.stButton > button:active { transform: translateY(1px) !important; }
+
+.stDownloadButton > button {
+    background: linear-gradient(135deg, #06ffa5, #00d48a) !important;
+    color: #000 !important;
+    font-family: 'Bebas Neue', cursive !important;
+    font-size: 1.5rem !important;
+    letter-spacing: 4px !important;
+    border: none !important;
+    border-radius: 6px !important;
+    height: 60px !important;
+    width: 100% !important;
+    box-shadow: 0 0 24px rgba(6,255,165,0.4) !important;
+    transition: all 0.2s !important;
+    animation: pulseGreen 2s ease-in-out infinite;
+}
+.stDownloadButton > button:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 0 40px rgba(6,255,165,0.7) !important;
+}
+@keyframes pulseGreen {
+    0%, 100% { box-shadow: 0 0 24px rgba(6,255,165,0.4); }
+    50%       { box-shadow: 0 0 40px rgba(6,255,165,0.7); }
+}
+
+.role-detected {
+    background: #0a1a12;
+    border: 1px solid #06ffa5;
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.05rem;
+    color: #06ffa5;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-align: center;
+    margin: 10px 0;
+}
+
+.kw-container {
+    background: #0d0d15;
+    border: 1px solid #1e1e2e;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 8px 0 16px 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    color: #555;
+    line-height: 2;
+}
+.kw-chip {
+    background: #14142a;
+    color: #ffe66d;
+    border: 1px solid #2a2a40;
+    border-radius: 4px;
+    padding: 1px 8px;
+    margin: 2px 3px;
+    display: inline-block;
+    font-size: 0.68rem;
+}
+
+.footer-txt {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    color: #2a2a3a;
+    text-align: center;
+    margin-top: 40px;
+    line-height: 2;
+}
+</style>
+""", unsafe_allow_html=True)
+
+import random
+JOKES = [
+    ("RECRUITER SCIENCE 🔬", "They say 'we'll get back to you.' Spoiler: nahi karte. Resume better karo, wait karo, repeat."),
+    ("ANURAG'S PLAN 📈", "Baker Hughes intern → BeyondWalls account manager → Amazon SDE-I → retire in Goa. All on track. (Last step TBD.)"),
+    ("ATS REALITY 🤖", "75% resumes reject hote hain machine se. Toh technically tu aaj insaan se nahi, algorithm se lad raha hai."),
+    ("COEP PRIDE 💛", "Electrical engineer applying for software roles. 'But why not CS?' — every uncle ever. Bhai, kaam chalta hai."),
+    ("PRO TIP 💡", "JD paste karo. Generate karo. Keywords auto-inject honge. Job guarantee? Nahi. Better resume? Zaroor."),
+    ("HONEST MOMENT 😌", "Ye tool resume banata hai. Interview prep, FAANG DSA rounds, aur HR rounds ke liye... best of luck bhai."),
+    ("MOTIVATIONAL 🔥", "'Overqualified for internship, underqualified for full-time.' — The eternal fresher struggle. Aage badho."),
+    ("FUN FACT 📊", "Average recruiter spends 7 seconds on a resume. Toh pehle 7 seconds mein keywords dikhne chahiye. Done. ✅"),
+]
+tag, joke = random.choice(JOKES)
+st.markdown(f"""
+<div class="big-title">RESUME GENERATOR<br>FOR ANURAG</div>
+<div class="subtitle">⚡ no api key &nbsp;•&nbsp; no crying &nbsp;•&nbsp; sirf JD daalo &nbsp;•&nbsp; magic hoga ⚡</div>
+<div class="joke-box">
+    <span class="joke-tag">// {tag}</span>
+    {joke}
+</div>
+""", unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ROLE DETECTION
@@ -799,23 +1004,43 @@ def compile_to_pdf(latex: str):
 # ROLE DISPLAY NAMES
 # ══════════════════════════════════════════════════════════════════════════════
 ROLE_DISPLAY = {
-    "sde":        "💻 SDE / Backend Engineer",
-    "analytics":  "📊 Data Analytics / BI",
+    "sde":          "💻 SDE / Backend Engineer",
+    "analytics":    "📊 Data Analytics / BI",
     "data_science": "🤖 Data Science / Risk / ML",
-    "entry":      "🎓 Entry Level / Trainee",
-    "consulting": "🏢 IT Consulting / Enterprise",
+    "entry":        "🎓 Entry Level / Trainee",
+    "consulting":   "🏢 IT Consulting / Enterprise",
 }
+
+ROLE_JOKES = {
+    "sde":          "Bhai ab DSA grind karo. LeetCode medium solve karo. Kal se. (Kal nahi karega.)",
+    "analytics":    "Power BI dashboard banao. Boss bole 'make it pop.' Nobody knows what that means.",
+    "data_science": "Model accuracy 99%? Overfit hai bhai. Real world mein 60% bhi struggle karega.",
+    "entry":        "Entry level: 0-2 years exp required. Also: preferred 5 years exp. Classic.",
+    "consulting":   "Client says 'we need this by EOD.' It is 4:58 PM. Good luck.",
+}
+
+SPINNERS = [
+    "☕ Chai ban raha hai aur resume bhi...",
+    "🔍 JD padh raha hoon, seriously is baar...",
+    "⚡ Keywords inject ho rahe hain matrix style...",
+    "🤖 ATS ko confuse kar raha hoon...",
+    "📝 Bullet points likh raha hoon with authority...",
+    "🎯 Recruiter ka attention capture ho raha hai...",
+]
 
 # ══════════════════════════════════════════════════════════════════════════════
 # UI
 # ══════════════════════════════════════════════════════════════════════════════
+st.markdown('<div class="section-head">// Step 1 — JD Yahan Daalo</div>', unsafe_allow_html=True)
+
 jd_input = st.text_area(
-    "📋 Paste the Job Description here",
-    height=300,
-    placeholder="Paste the full job description including skills, responsibilities, and qualifications..."
+    "",
+    height=280,
+    placeholder="Yahan job description paste karo...\n\nPura JD dalo — skills, responsibilities, requirements sab kuch.\nJitna zyada doge, utna better keywords match hoga.\n\n(Aur han, Amazon ka JD bhi supported hai. Dream big. 🚀)",
+    label_visibility="collapsed"
 )
 
-generate_btn = st.button("✨ Generate Resume", type="primary", use_container_width=True)
+generate_btn = st.button("🚀  GENERATE KARO — AB NAHI TOH KAB", use_container_width=True)
 
 if "latex" not in st.session_state:    st.session_state.latex = None
 if "pdf_bytes" not in st.session_state: st.session_state.pdf_bytes = None
@@ -824,40 +1049,75 @@ if "keywords" not in st.session_state: st.session_state.keywords = []
 
 if generate_btn:
     if not jd_input.strip():
-        st.warning("⚠️ Please paste a Job Description.")
+        st.warning("⚠️ Bhai JD toh daalo pehle. Blank se resume nahi banta.")
     else:
-        with st.spinner("🔍 Analyzing JD..."):
+        spinner_msg = random.choice(SPINNERS)
+        with st.spinner(spinner_msg):
             keywords = extract_keywords(jd_input)
             role = detect_role(jd_input)
             st.session_state.keywords = keywords
             st.session_state.role = role
 
-        with st.spinner("📝 Building tailored resume..."):
+        with st.spinner("📝 Role detect hua, ab resume tailor ho raha hai..."):
             latex = build_latex(role, jd_input, keywords)
             st.session_state.latex = latex
 
-        with st.spinner("📄 Compiling PDF (10-15 seconds)..."):
+        with st.spinner("📄 PDF compile ho raha hai... 10-15 seconds, sabr karo..."):
             pdf, err = compile_to_pdf(latex)
             st.session_state.pdf_bytes = pdf
             if err:
-                st.error(f"PDF error: {err}")
+                st.error(f"PDF error (fir se try karo): {err}")
 
-# ── Output ────────────────────────────────────────────────────────────────────
+# ── Output ─────────────────────────────────────────────────────────────────
 if st.session_state.latex:
-    st.success("✅ Resume generated!")
-    if st.session_state.role:
-        st.info(f"🎯 **Detected Role:** {ROLE_DISPLAY.get(st.session_state.role, st.session_state.role)}")
-    if st.session_state.keywords:
-        st.caption(f"**Keywords matched:** {', '.join(st.session_state.keywords[:18])}")
 
+    # Role Card
+    if st.session_state.role:
+        role_name = ROLE_DISPLAY.get(st.session_state.role, st.session_state.role)
+        role_joke = ROLE_JOKES.get(st.session_state.role, "")
+        st.markdown(f"""
+        <div class="role-detected">
+            ✅ &nbsp; ROLE DETECTED: {role_name}<br>
+            <span style="font-size:0.8rem; color:#888; font-weight:400;">{role_joke}</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Keywords strip
+    if st.session_state.keywords:
+        kw_list = st.session_state.keywords[:20]
+        chips = "".join([f'<span class="kw-chip">{k}</span>' for k in kw_list])
+        st.markdown(f"""
+        <div class="kw-container">
+            <span style="color:#444; font-size:0.65rem; letter-spacing:2px; text-transform:uppercase;">KEYWORDS MATCHED ({len(st.session_state.keywords)}) &nbsp;</span><br>
+            {chips}
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Download button
     if st.session_state.pdf_bytes:
+        st.markdown('<div class="section-head">// Step 2 — Download Karo, Apply Karo</div>', unsafe_allow_html=True)
         st.download_button(
-            label="⬇️ Download Resume (PDF)",
+            label="⬇️  DOWNLOAD RESUME PDF — PAKAD LO",
             data=st.session_state.pdf_bytes,
             file_name="Anurag_Lokhande_Resume.pdf",
             mime="application/pdf",
             use_container_width=True,
-            type="primary"
         )
+        st.markdown("""
+        <div style="font-family:'Space Mono',monospace; font-size:0.68rem; color:#444; text-align:center; margin-top:8px;">
+            PDF ready hai. Apply karo. Rejection letter aaye toh fir se aana. 💪
+        </div>
+        """, unsafe_allow_html=True)
     else:
-        st.error("❌ PDF generation failed. Please try again.")
+        st.error("❌ PDF nahi bana. Fir se try karo ya Overleaf use karo.")
+
+# Footer
+st.markdown("""
+<div class="footer-txt">
+    ────────────────────────────────────────────────────<br>
+    Made with ☕ + sarcasm + genuine hope for Anurag's job hunt<br>
+    COEP Electrical 2025 → Software World → 🚀<br>
+    No API keys were harmed in the making of this resume.<br>
+    ────────────────────────────────────────────────────
+</div>
+""", unsafe_allow_html=True)
