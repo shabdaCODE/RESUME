@@ -1,26 +1,23 @@
 import streamlit as st
-from groq import Groq
+import openai
 import subprocess
 import os
 import tempfile
 import re
 
-# ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Anurag's Resume Generator", page_icon="📄", layout="centered")
 
 st.title("📄 JD → ATS Resume Generator")
 st.caption("Paste a Job Description → get a tailored, ATS-friendly resume as a PDF")
 
-# ── Sidebar: API Key ──────────────────────────────────────────────────────────
 st.sidebar.header("⚙️ Settings")
-if "GROQ_API_KEY" in st.secrets:
-    api_key = st.secrets["GROQ_API_KEY"]
-    st.sidebar.success("Groq API key loaded ✅")
+if "OPENAI_API_KEY" in st.secrets:
+    api_key = st.secrets["OPENAI_API_KEY"]
+    st.sidebar.success("OpenAI API key loaded ✅")
 else:
-    api_key = st.sidebar.text_input("🔑 Groq API Key", type="password",
-                                     help="Get your free key at console.groq.com")
+    api_key = st.sidebar.text_input("🔑 OpenAI API Key", type="password",
+                                     help="Get your key at platform.openai.com/api-keys")
 
-# ── Fixed candidate info ──────────────────────────────────────────────────────
 CANDIDATE_INFO = """
 Name: Anurag Lokhande
 Phone: +91 77092 71496
@@ -157,7 +154,6 @@ def compile_latex_to_pdf(latex_body: str):
             st.code(result.stdout[-3000:], language="text")
             return None
 
-# ── UI ────────────────────────────────────────────────────────────────────────
 jd_input = st.text_area(
     "📋 Paste the Job Description here",
     height=280,
@@ -177,15 +173,15 @@ if "pdf_bytes" not in st.session_state:
 
 if generate_btn:
     if not api_key:
-        st.warning("⚠️ Please enter your Groq API key in the sidebar.")
+        st.warning("⚠️ Please enter your OpenAI API key in the sidebar.")
     elif not jd_input.strip():
         st.warning("⚠️ Please paste a Job Description.")
     else:
-        with st.spinner("⚡ Generating ATS-optimized resume..."):
+        with st.spinner("🤖 Generating ATS-optimized resume..."):
             try:
-                client = Groq(api_key=api_key)
+                client = openai.OpenAI(api_key=api_key)
                 response = client.chat.completions.create(
-                    model="llama-3.1-8b-instant",
+                    model="gpt-4o-mini",
                     messages=[{"role": "user", "content": build_prompt(jd_input)}],
                     temperature=0.3,
                     max_tokens=2500
@@ -195,7 +191,7 @@ if generate_btn:
                 latex_body = latex_body.replace("```", "").strip()
                 st.session_state.latex_body = latex_body
             except Exception as e:
-                st.error(f"Groq API error: {e}")
+                st.error(f"OpenAI API error: {e}")
                 st.stop()
 
         with st.spinner("📄 Compiling PDF..."):
