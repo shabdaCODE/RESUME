@@ -1,5 +1,6 @@
 import streamlit as st
 import subprocess
+import requests
 import os
 import tempfile
 import re
@@ -592,20 +593,48 @@ def build_latex(role: str, jd_text: str, jd_keywords: list) -> str:
 # PDF COMPILER
 # ══════════════════════════════════════════════════════════════════════════════
 def compile_to_pdf(latex: str):
-    with tempfile.TemporaryDirectory() as tmpdir:
-        tex_path = os.path.join(tmpdir, "resume.tex")
-        pdf_path = os.path.join(tmpdir, "resume.pdf")
-        with open(tex_path, "w", encoding="utf-8") as f:
-            f.write(latex)
-        for _ in range(2):
-            result = subprocess.run(
-                ["pdflatex", "-interaction=nonstopmode", "-output-directory", tmpdir, tex_path],
-                capture_output=True, text=True
+    """Try local pdflatex first, then fall back to free online API."""
+    # ── Try local pdflatex ──────────────────────────────────────────────────
+    check = subprocess.run(["which", "pdflatex"], capture_output=True)
+    if check.returncode == 0:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tex_path = os.path.join(tmpdir, "resume.tex")
+            pdf_path = os.path.join(tmpdir, "resume.pdf")
+            with open(tex_path, "w", encoding="utf-8") as f:
+                f.write(latex)
+            for _ in range(2):
+                result = subprocess.run(
+                    ["pdflatex", "-interaction=nonstopmode", "-output-directory", tmpdir, tex_path],
+                    capture_output=True, text=True
+                )
+            if os.path.exists(pdf_path):
+                with open(pdf_path, "rb") as f:
+                    return f.read(), None
+            return None, "Local pdflatex failed: " + result.stdout[-2000:]
+
+    # ── Fall back to LaTeX.Online free API ──────────────────────────────────
+    try:
+        import requests
+        response = requests.post(
+            "https://latexonline.cc/compile",
+            files={"file": ("resume.tex", latex.encode("utf-8"), "text/plain")},
+            timeout=60
+        )
+        if response.status_code == 200 and response.headers.get("content-type", "").startswith("application/pdf"):
+            return response.content, None
+        else:
+            # Try alternate endpoint
+            response2 = requests.post(
+                "https://latex.ytotech.com/builds/sync",
+                json={"compiler": "pdflatex", "resources": [{"main": True, "content": latex}]},
+                headers={"Content-Type": "application/json"},
+                timeout=60
             )
-        if os.path.exists(pdf_path):
-            with open(pdf_path, "rb") as f:
-                return f.read(), None
-        return None, result.stdout[-3000:]
+            if response2.status_code == 201:
+                return response2.content, None
+            return None, f"API error: {response.status_code} - {response.text[:500]}"
+    except Exception as e:
+        return None, f"Compilation error: {str(e)}" 
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ROLE DISPLAY NAMES
@@ -652,16 +681,11 @@ if generate_btn:
             latex = build_latex(role, jd_input, keywords)
             st.session_state.latex = latex
 
-        with st.spinner("📄 Compiling PDF..."):
-            check = subprocess.run(["which", "pdflatex"], capture_output=True)
-            if check.returncode != 0:
-                st.session_state.pdf_bytes = None
-            else:
-                pdf, err = compile_to_pdf(latex)
-                st.session_state.pdf_bytes = pdf
-                if err:
-                    st.error("LaTeX error:")
-                    st.code(err)
+        with st.spinner("📄 Compiling PDF (this may take 10-15 seconds)..."):
+            pdf, err = compile_to_pdf(latex)
+            st.session_state.pdf_bytes = pdf
+            if err:
+                st.error(f"PDF compilation failed: {err}")
 
 if st.session_state.latex:
     st.success("✅ Resume generated!")
@@ -685,14 +709,4 @@ if st.session_state.latex:
             type="primary"
         )
     else:
-        st.warning("⚠️ pdflatex not available on this server.")
-        st.info("👉 Copy the LaTeX code below → paste at **overleaf.com** → Download PDF")
-
-    if not st.session_state.pdf_bytes:
-        st.download_button(
-            label="⬇️ Download LaTeX (.tex)",
-            data=st.session_state.latex,
-            file_name="Anurag_Lokhande_Resume.tex",
-            mime="text/plain",
-            use_container_width=True
-        )
+        st.error("❌ PDF generation failed. Please try again.")
