@@ -1,2 +1,2 @@
 -e streamlit
-groq
+openai
