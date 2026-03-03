@@ -4,7 +4,7 @@ import json
 import re
 
 
-MODEL = "mistralai/Mistral-7B-Instruct-v0.2"
+MODEL = "meta-llama/Llama-3-8b-instruct"
 HF_API_KEY = st.secrets["HF_API_KEY"]
 
 
