@@ -2,39 +2,51 @@ import os
 import json
 import requests
 import streamlit as st
-from weasyprint import HTML
 from dotenv import load_dotenv
 
-load_dotenv()
+# PDF (Cloud Safe)
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    ListFlowable,
+    ListItem
+)
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import LETTER
 
 # ===============================
-# CONFIG
+# LOAD ENV
 # ===============================
+
+load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 HF_API_KEY = os.getenv("HF_API_KEY")
 OLLAMA_URL = "http://localhost:11434/api/generate"
 
 # ===============================
-# AI LAYER
+# AI PROVIDERS
 # ===============================
 
 def generate_with_openai(prompt):
-    import openai
-    openai.api_key = OPENAI_API_KEY
-    
-    response = openai.ChatCompletion.create(
+    from openai import OpenAI
+
+    client = OpenAI(api_key=OPENAI_API_KEY)
+
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7,
     )
-    
-    return response["choices"][0]["message"]["content"]
+
+    return response.choices[0].message.content
 
 
 def generate_with_huggingface(prompt):
     headers = {"Authorization": f"Bearer {HF_API_KEY}"}
-    
+
     payload = {
         "inputs": prompt,
         "parameters": {
@@ -42,14 +54,19 @@ def generate_with_huggingface(prompt):
             "temperature": 0.7
         }
     }
-    
+
     response = requests.post(
         "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2",
         headers=headers,
         json=payload,
     )
-    
-    return response.json()[0]["generated_text"]
+
+    result = response.json()
+
+    if isinstance(result, list):
+        return result[0]["generated_text"]
+    else:
+        return "⚠️ HuggingFace Error: " + str(result)
 
 
 def generate_with_ollama(prompt, model="mistral"):
@@ -58,7 +75,7 @@ def generate_with_ollama(prompt, model="mistral"):
         "prompt": prompt,
         "stream": False
     }
-    
+
     response = requests.post(OLLAMA_URL, json=payload)
     return response.json()["response"]
 
@@ -75,89 +92,99 @@ def generate_ai_response(prompt, provider):
 
 
 # ===============================
-# PROMPT BUILDERS
+# PROMPTS
 # ===============================
 
-def build_role_detection_prompt(jd):
+def build_resume_prompt(jd, user_info):
     return f"""
-    Analyze the following Job Description and identify:
-    1. Target Role (e.g., SDE, Data Scientist, Consultant)
-    2. Seniority Level
-    3. Core Skills Required
+You are an expert resume writer.
 
-    JD:
-    {jd}
+Create an ATS-optimized resume tailored to this Job Description.
 
-    Return output in structured JSON.
-    """
+Candidate Info:
+{json.dumps(user_info, indent=2)}
 
+Job Description:
+{jd}
 
-def build_resume_generation_prompt(jd, user_info):
-    return f"""
-    Create an ATS-optimized resume based on:
+Requirements:
+- Quantified achievements
+- Bullet format
+- Professional tone
+- No fluff
+- Strong action verbs
 
-    Candidate Info:
-    {json.dumps(user_info, indent=2)}
-
-    Job Description:
-    {jd}
-
-    Requirements:
-    - Tailored bullet points
-    - Quantified achievements
-    - Relevant tech stack
-    - Clean professional tone
-    - No fluff
-
-    Output in structured JSON format:
-    {{
-      "summary": "...",
-      "experience": [...],
-      "projects": [...],
-      "skills": [...]
-    }}
-    """
+Return STRICT JSON:
+{{
+  "summary": "text",
+  "experience": ["bullet1", "bullet2"],
+  "projects": ["bullet1", "bullet2"],
+  "skills": ["skill1", "skill2"]
+}}
+"""
 
 
 # ===============================
-# PDF GENERATION
+# PDF GENERATION (CLOUD SAFE)
 # ===============================
 
-def generate_pdf(html_content):
-    HTML(string=html_content).write_pdf("resume.pdf")
-    return "resume.pdf"
+def generate_pdf(data, user_info):
 
+    file_path = "resume.pdf"
+    doc = SimpleDocTemplate(file_path, pagesize=LETTER)
+    elements = []
+    styles = getSampleStyleSheet()
 
-def build_html_resume(data, user_info):
-    html = f"""
-    <html>
-    <head>
-    <style>
-    body {{ font-family: Arial; margin: 40px; }}
-    h1 {{ margin-bottom: 5px; }}
-    h2 {{ margin-top: 25px; }}
-    ul {{ margin-left: 20px; }}
-    </style>
-    </head>
-    <body>
-    <h1>{user_info["name"]}</h1>
-    <p>{user_info["email"]} | {user_info["phone"]}</p>
+    # Name
+    elements.append(Paragraph(f"<b>{user_info['name']}</b>", styles["Heading1"]))
+    elements.append(Spacer(1, 0.2 * inch))
 
-    <h2>Professional Summary</h2>
-    <p>{data["summary"]}</p>
+    # Contact
+    elements.append(Paragraph(
+        f"{user_info['email']} | {user_info['phone']}",
+        styles["Normal"]
+    ))
+    elements.append(Spacer(1, 0.3 * inch))
 
-    <h2>Experience</h2>
-    {"".join([f"<p><b>{exp}</b></p>" for exp in data["experience"]])}
+    # Summary
+    elements.append(Paragraph("<b>Professional Summary</b>", styles["Heading2"]))
+    elements.append(Spacer(1, 0.1 * inch))
+    elements.append(Paragraph(data["summary"], styles["Normal"]))
+    elements.append(Spacer(1, 0.3 * inch))
 
-    <h2>Projects</h2>
-    {"".join([f"<p>{proj}</p>" for proj in data["projects"]])}
+    # Experience
+    elements.append(Paragraph("<b>Experience</b>", styles["Heading2"]))
+    elements.append(Spacer(1, 0.1 * inch))
 
-    <h2>Skills</h2>
-    <p>{", ".join(data["skills"])}</p>
-    </body>
-    </html>
-    """
-    return html
+    exp_list = [
+        ListItem(Paragraph(exp.strip(), styles["Normal"]))
+        for exp in data["experience"]
+    ]
+    elements.append(ListFlowable(exp_list, bulletType="bullet"))
+    elements.append(Spacer(1, 0.3 * inch))
+
+    # Projects
+    elements.append(Paragraph("<b>Projects</b>", styles["Heading2"]))
+    elements.append(Spacer(1, 0.1 * inch))
+
+    proj_list = [
+        ListItem(Paragraph(proj.strip(), styles["Normal"]))
+        for proj in data["projects"]
+    ]
+    elements.append(ListFlowable(proj_list, bulletType="bullet"))
+    elements.append(Spacer(1, 0.3 * inch))
+
+    # Skills
+    elements.append(Paragraph("<b>Skills</b>", styles["Heading2"]))
+    elements.append(Spacer(1, 0.1 * inch))
+    elements.append(
+        Paragraph(", ".join([s.strip() for s in data["skills"]]),
+        styles["Normal"])
+    )
+
+    doc.build(elements)
+
+    return file_path
 
 
 # ===============================
@@ -178,7 +205,7 @@ email = st.text_input("Email")
 phone = st.text_input("Phone")
 
 st.subheader("Paste Job Description")
-jd = st.text_area("Job Description", height=200)
+jd = st.text_area("Job Description", height=250)
 
 if st.button("Generate Resume"):
 
@@ -188,48 +215,45 @@ if st.button("Generate Resume"):
         "phone": phone
     }
 
-    with st.spinner("Analyzing JD..."):
-        role_prompt = build_role_detection_prompt(jd)
-        role_analysis = generate_ai_response(role_prompt, provider)
-        st.write("### Role Analysis")
-        st.write(role_analysis)
-
     with st.spinner("Generating Resume..."):
-        resume_prompt = build_resume_generation_prompt(jd, user_info)
-        resume_output = generate_ai_response(resume_prompt, provider)
+        prompt = build_resume_prompt(jd, user_info)
+        ai_output = generate_ai_response(prompt, provider)
 
     try:
-        resume_data = json.loads(resume_output)
+        resume_data = json.loads(ai_output)
     except:
-        st.error("AI did not return valid JSON.")
+        st.error("AI did not return valid JSON. Try again.")
         st.stop()
 
-    st.subheader("Edit Resume Content")
+    st.subheader("Edit Resume")
 
     resume_data["summary"] = st.text_area(
-        "Summary", value=resume_data["summary"]
+        "Summary",
+        value=resume_data["summary"]
     )
 
     st.write("### Experience")
-    for i, exp in enumerate(resume_data["experience"]):
+    for i in range(len(resume_data["experience"])):
         resume_data["experience"][i] = st.text_area(
-            f"Experience {i+1}", value=exp
+            f"Experience {i+1}",
+            value=resume_data["experience"][i]
         )
 
     st.write("### Projects")
-    for i, proj in enumerate(resume_data["projects"]):
+    for i in range(len(resume_data["projects"])):
         resume_data["projects"][i] = st.text_area(
-            f"Project {i+1}", value=proj
+            f"Project {i+1}",
+            value=resume_data["projects"][i]
         )
 
-    resume_data["skills"] = st.text_input(
+    skills_input = st.text_input(
         "Skills (comma separated)",
         value=", ".join(resume_data["skills"])
-    ).split(",")
+    )
+    resume_data["skills"] = skills_input.split(",")
 
     if st.button("Download PDF"):
-        html = build_html_resume(resume_data, user_info)
-        pdf_path = generate_pdf(html)
+        pdf_path = generate_pdf(resume_data, user_info)
 
         with open(pdf_path, "rb") as f:
             st.download_button(
