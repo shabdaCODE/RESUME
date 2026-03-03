@@ -20,12 +20,11 @@ HEADERS = {
 }
 # Verified working free models on OpenRouter — tries each in order
 MODELS = [
-    "deepseek/deepseek-r1:free",
-    "deepseek/deepseek-chat:free",
-    "meta-llama/llama-3.2-3b-instruct:free",
+    "deepseek/deepseek-r1:free",          # confirmed free long-term
+    "deepseek/deepseek-chat:free",         # confirmed free long-term  
+    "meta-llama/llama-3.3-70b-instruct:free",
     "mistralai/mistral-7b-instruct:free",
-    "google/gemma-2-9b-it:free",
-    "qwen/qwen-2-7b-instruct:free",
+    "openrouter/free",                     # auto-picks any available free model — never 404s
 ]
 
 # ══════════════════════════════════════════════════════════════════════════════
