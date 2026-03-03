@@ -4,6 +4,9 @@ import json
 import re
 
 import streamlit as st
+st.write("Secrets keys:", list(st.secrets.keys()))
+st.write("Token starts with:", st.secrets["HF_API_KEY"][:5])
+st.stop()
 
 HF_API_KEY = st.secrets["HF_API_KEY"]
 
