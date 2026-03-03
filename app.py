@@ -1,5 +1,6 @@
 import os
 import json
+import re
 import requests
 import streamlit as st
 from dotenv import load_dotenv
@@ -21,28 +22,13 @@ from reportlab.lib.pagesizes import LETTER
 # ===============================
 
 load_dotenv()
-
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 HF_API_KEY = os.getenv("HF_API_KEY")
-OLLAMA_URL = "http://localhost:11434/api/generate"
 
 # ===============================
-# AI PROVIDERS
+# HUGGING FACE CONFIG
 # ===============================
 
-def generate_with_openai(prompt):
-    from openai import OpenAI
-
-    client = OpenAI(api_key=OPENAI_API_KEY)
-
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.7,
-    )
-
-    return response.choices[0].message.content
-
+HF_MODEL_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
 
 def generate_with_huggingface(prompt):
     headers = {"Authorization": f"Bearer {HF_API_KEY}"}
@@ -50,49 +36,35 @@ def generate_with_huggingface(prompt):
     payload = {
         "inputs": prompt,
         "parameters": {
-            "max_new_tokens": 800,
-            "temperature": 0.7
+            "max_new_tokens": 900,
+            "temperature": 0.7,
+            "return_full_text": False
         }
     }
 
-    response = requests.post(
-        "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2",
-        headers=headers,
-        json=payload,
-    )
-
+    response = requests.post(HF_MODEL_URL, headers=headers, json=payload)
     result = response.json()
 
     if isinstance(result, list):
         return result[0]["generated_text"]
     else:
-        return "⚠️ HuggingFace Error: " + str(result)
-
-
-def generate_with_ollama(prompt, model="mistral"):
-    payload = {
-        "model": model,
-        "prompt": prompt,
-        "stream": False
-    }
-
-    response = requests.post(OLLAMA_URL, json=payload)
-    return response.json()["response"]
-
-
-def generate_ai_response(prompt, provider):
-    if provider == "OpenAI" and OPENAI_API_KEY:
-        return generate_with_openai(prompt)
-    elif provider == "HuggingFace" and HF_API_KEY:
-        return generate_with_huggingface(prompt)
-    elif provider == "Ollama":
-        return generate_with_ollama(prompt)
-    else:
-        return "⚠️ No valid AI provider configured."
-
+        return str(result)
 
 # ===============================
-# PROMPTS
+# SAFE JSON EXTRACTION
+# ===============================
+
+def extract_json(text):
+    try:
+        return json.loads(text)
+    except:
+        match = re.search(r"\{.*\}", text, re.DOTALL)
+        if match:
+            return json.loads(match.group())
+        return None
+
+# ===============================
+# PROMPT
 # ===============================
 
 def build_resume_prompt(jd, user_info):
@@ -111,10 +83,10 @@ Requirements:
 - Quantified achievements
 - Bullet format
 - Professional tone
-- No fluff
 - Strong action verbs
+- No extra explanation text
 
-Return STRICT JSON:
+Return STRICT JSON only:
 {{
   "summary": "text",
   "experience": ["bullet1", "bullet2"],
@@ -123,36 +95,29 @@ Return STRICT JSON:
 }}
 """
 
-
 # ===============================
-# PDF GENERATION (CLOUD SAFE)
+# PDF GENERATION
 # ===============================
 
 def generate_pdf(data, user_info):
-
     file_path = "resume.pdf"
     doc = SimpleDocTemplate(file_path, pagesize=LETTER)
     elements = []
     styles = getSampleStyleSheet()
 
-    # Name
     elements.append(Paragraph(f"<b>{user_info['name']}</b>", styles["Heading1"]))
     elements.append(Spacer(1, 0.2 * inch))
 
-    # Contact
-    elements.append(Paragraph(
-        f"{user_info['email']} | {user_info['phone']}",
-        styles["Normal"]
-    ))
+    elements.append(
+        Paragraph(f"{user_info['email']} | {user_info['phone']}", styles["Normal"])
+    )
     elements.append(Spacer(1, 0.3 * inch))
 
-    # Summary
     elements.append(Paragraph("<b>Professional Summary</b>", styles["Heading2"]))
     elements.append(Spacer(1, 0.1 * inch))
     elements.append(Paragraph(data["summary"], styles["Normal"]))
     elements.append(Spacer(1, 0.3 * inch))
 
-    # Experience
     elements.append(Paragraph("<b>Experience</b>", styles["Heading2"]))
     elements.append(Spacer(1, 0.1 * inch))
 
@@ -163,7 +128,6 @@ def generate_pdf(data, user_info):
     elements.append(ListFlowable(exp_list, bulletType="bullet"))
     elements.append(Spacer(1, 0.3 * inch))
 
-    # Projects
     elements.append(Paragraph("<b>Projects</b>", styles["Heading2"]))
     elements.append(Spacer(1, 0.1 * inch))
 
@@ -174,7 +138,6 @@ def generate_pdf(data, user_info):
     elements.append(ListFlowable(proj_list, bulletType="bullet"))
     elements.append(Spacer(1, 0.3 * inch))
 
-    # Skills
     elements.append(Paragraph("<b>Skills</b>", styles["Heading2"]))
     elements.append(Spacer(1, 0.1 * inch))
     elements.append(
@@ -183,9 +146,7 @@ def generate_pdf(data, user_info):
     )
 
     doc.build(elements)
-
     return file_path
-
 
 # ===============================
 # STREAMLIT UI
@@ -193,21 +154,24 @@ def generate_pdf(data, user_info):
 
 st.title("AI Resume Generator")
 
-provider = st.selectbox(
-    "Select AI Provider",
-    ["OpenAI", "HuggingFace", "Ollama"]
-)
+# ===== Checkbox =====
 
-st.subheader("Enter Personal Details")
+is_me = st.checkbox("Are you me?")
 
-name = st.text_input("Name")
-email = st.text_input("Email")
-phone = st.text_input("Phone")
+if is_me:
+    # Auto-fill your details
+    user_info = {
+        "name": "Anurag Lokhande",
+        "email": "your_email@example.com",
+        "phone": "your_phone_number"
+    }
+    st.success("Using saved profile details.")
 
-st.subheader("Paste Job Description")
-jd = st.text_area("Job Description", height=250)
-
-if st.button("Generate Resume"):
+else:
+    st.subheader("Enter Personal Details")
+    name = st.text_input("Name")
+    email = st.text_input("Email")
+    phone = st.text_input("Phone")
 
     user_info = {
         "name": name,
@@ -215,14 +179,28 @@ if st.button("Generate Resume"):
         "phone": phone
     }
 
+# ===== JD Input =====
+
+st.subheader("Paste Job Description")
+jd = st.text_area("Job Description", height=250)
+
+# ===== Generate =====
+
+if st.button("Generate Resume"):
+
+    if not HF_API_KEY:
+        st.error("HuggingFace API Key not found in environment.")
+        st.stop()
+
     with st.spinner("Generating Resume..."):
         prompt = build_resume_prompt(jd, user_info)
-        ai_output = generate_ai_response(prompt, provider)
+        ai_output = generate_with_huggingface(prompt)
 
-    try:
-        resume_data = json.loads(ai_output)
-    except:
-        st.error("AI did not return valid JSON. Try again.")
+    resume_data = extract_json(ai_output)
+
+    if not resume_data:
+        st.error("AI did not return valid JSON.")
+        st.write(ai_output)
         st.stop()
 
     st.subheader("Edit Resume")
