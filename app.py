@@ -1,269 +1,170 @@
-import os
+import streamlit as st
+import requests
 import json
 import re
-import requests
-import streamlit as st
-from dotenv import load_dotenv
+import os
 
-# PDF
-from reportlab.platypus import (
-    SimpleDocTemplate,
-    Paragraph,
-    Spacer,
-    ListFlowable,
-    ListItem
-)
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import inch
-from reportlab.lib.pagesizes import LETTER
-
-# ===============================
-# ENV
-# ===============================
-
-load_dotenv()
 HF_API_KEY = os.getenv("HF_API_KEY")
+MODEL = "mistralai/Mistral-7B-Instruct-v0.2"
 
-HF_MODEL_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
+API_URL = f"https://router.huggingface.co/hf-inference/models/{MODEL}"
 
-# ===============================
-# HUGGING FACE CALL
-# ===============================
+headers = {
+    "Authorization": f"Bearer {HF_API_KEY}",
+    "Content-Type": "application/json",
+}
 
+# ----------------------------
+# Hugging Face Generation
+# ----------------------------
 def generate_with_huggingface(prompt):
-    headers = {"Authorization": f"Bearer {HF_API_KEY}"}
-
     payload = {
         "inputs": prompt,
         "parameters": {
-            "max_new_tokens": 900,
-            "temperature": 0.5,
-            "return_full_text": False
+            "max_new_tokens": 800,
+            "temperature": 0.4
         }
     }
 
-    response = requests.post(HF_MODEL_URL, headers=headers, json=payload)
-    result = response.json()
+    response = requests.post(API_URL, headers=headers, json=payload)
 
-    if isinstance(result, list):
-        return result[0]["generated_text"]
+    if response.status_code != 200:
+        return {"error": response.text}
+
+    data = response.json()
+
+    if isinstance(data, list):
+        return data[0].get("generated_text", "")
+    elif isinstance(data, dict) and "generated_text" in data:
+        return data["generated_text"]
     else:
-        return str(result)
+        return str(data)
 
-# ===============================
-# SAFE JSON EXTRACTION
-# ===============================
-
+# ----------------------------
+# Safe JSON Extractor
+# ----------------------------
 def extract_json(text):
-    # First try normal parse
     try:
         return json.loads(text)
     except:
         pass
 
-    # Try to safely extract JSON block
     start = text.find("{")
     end = text.rfind("}")
 
     if start != -1 and end != -1:
-        candidate = text[start:end + 1]
-
-        # Fix common LLM mistakes
-        candidate = re.sub(r",\s*}", "}", candidate)
-        candidate = re.sub(r",\s*]", "]", candidate)
+        json_candidate = text[start:end + 1]
+        json_candidate = re.sub(r",\s*}", "}", json_candidate)
+        json_candidate = re.sub(r",\s*]", "]", json_candidate)
 
         try:
-            return json.loads(candidate)
+            return json.loads(json_candidate)
         except:
             return None
 
     return None
 
-# ===============================
-# PROMPT
-# ===============================
-
+# ----------------------------
+# Prompt Builder
+# ----------------------------
 def build_resume_prompt(jd, user_info):
     return f"""
-You are an expert resume writer.
+You are a professional resume writer.
 
-Create an ATS-optimized resume tailored to this Job Description.
+Using the following job description:
 
-Candidate Info:
-{json.dumps(user_info, indent=2)}
-
-Job Description:
 {jd}
 
-Requirements:
-- Quantified achievements
-- Bullet format
-- Professional tone
-- Strong action verbs
-- No explanations
-- No markdown
-- No extra text
+Using this candidate information:
+
+{json.dumps(user_info)}
 
 Return ONLY valid JSON.
-JSON must be syntactically correct.
+Do NOT include explanation.
+Do NOT use markdown.
+Do NOT wrap in code block.
 
 Format:
+
 {{
-  "summary": "text",
-  "experience": ["bullet1", "bullet2"],
-  "projects": ["bullet1", "bullet2"],
-  "skills": ["skill1", "skill2"]
+  "summary": "...",
+  "skills": ["...", "..."],
+  "experience": [
+      {{
+        "title": "...",
+        "company": "...",
+        "points": ["...", "..."]
+      }}
+  ]
 }}
 """
 
-# ===============================
-# PDF GENERATION
-# ===============================
-
-def generate_pdf(data, user_info):
-    file_path = "resume.pdf"
-    doc = SimpleDocTemplate(file_path, pagesize=LETTER)
-    elements = []
-    styles = getSampleStyleSheet()
-
-    elements.append(Paragraph(f"<b>{user_info['name']}</b>", styles["Heading1"]))
-    elements.append(Spacer(1, 0.2 * inch))
-
-    elements.append(
-        Paragraph(f"{user_info['email']} | {user_info['phone']}", styles["Normal"])
-    )
-    elements.append(Spacer(1, 0.3 * inch))
-
-    elements.append(Paragraph("<b>Professional Summary</b>", styles["Heading2"]))
-    elements.append(Spacer(1, 0.1 * inch))
-    elements.append(Paragraph(data["summary"], styles["Normal"]))
-    elements.append(Spacer(1, 0.3 * inch))
-
-    elements.append(Paragraph("<b>Experience</b>", styles["Heading2"]))
-    elements.append(Spacer(1, 0.1 * inch))
-
-    exp_list = [
-        ListItem(Paragraph(exp.strip(), styles["Normal"]))
-        for exp in data["experience"]
-    ]
-    elements.append(ListFlowable(exp_list, bulletType="bullet"))
-    elements.append(Spacer(1, 0.3 * inch))
-
-    elements.append(Paragraph("<b>Projects</b>", styles["Heading2"]))
-    elements.append(Spacer(1, 0.1 * inch))
-
-    proj_list = [
-        ListItem(Paragraph(proj.strip(), styles["Normal"]))
-        for proj in data["projects"]
-    ]
-    elements.append(ListFlowable(proj_list, bulletType="bullet"))
-    elements.append(Spacer(1, 0.3 * inch))
-
-    elements.append(Paragraph("<b>Skills</b>", styles["Heading2"]))
-    elements.append(Spacer(1, 0.1 * inch))
-    elements.append(
-        Paragraph(", ".join([s.strip() for s in data["skills"]]),
-        styles["Normal"])
-    )
-
-    doc.build(elements)
-    return file_path
-
-# ===============================
-# STREAMLIT UI
-# ===============================
-
+# ----------------------------
+# UI
+# ----------------------------
 st.title("AI Resume Generator")
 
-# Checkbox
+jd = st.text_area("Paste Job Description")
+
 is_me = st.checkbox("Are you me?")
 
 if is_me:
+    # Predefined info
     user_info = {
         "name": "Anurag Lokhande",
         "email": "your_email@example.com",
-        "phone": "your_phone_number"
+        "experience": "5+ years in marketing & real estate strategy",
+        "skills": ["Marketing Strategy", "Meta Ads", "Real Estate Sales"]
     }
-    st.success("Using saved profile details.")
 else:
-    st.subheader("Enter Personal Details")
-    name = st.text_input("Name")
-    email = st.text_input("Email")
-    phone = st.text_input("Phone")
+    name = st.text_input("Your Name")
+    email = st.text_input("Your Email")
+    experience = st.text_area("Your Experience")
+    skills = st.text_input("Your Skills (comma separated)")
 
     user_info = {
         "name": name,
         "email": email,
-        "phone": phone
+        "experience": experience,
+        "skills": [s.strip() for s in skills.split(",") if s]
     }
 
-st.subheader("Paste Job Description")
-jd = st.text_area("Job Description", height=250)
-
-# ===============================
-# GENERATE
-# ===============================
-
 if st.button("Generate Resume"):
-
-    if not HF_API_KEY:
-        st.error("HF_API_KEY not found in environment.")
-        st.stop()
-
-    if not jd.strip():
-        st.error("Please paste a Job Description.")
+    if not jd:
+        st.error("Please paste Job Description")
         st.stop()
 
     with st.spinner("Generating Resume..."):
         prompt = build_resume_prompt(jd, user_info)
         ai_output = generate_with_huggingface(prompt)
 
+    if isinstance(ai_output, dict) and "error" in ai_output:
+        st.error(ai_output["error"])
+        st.stop()
+
     resume_data = extract_json(ai_output)
 
-    # Retry once if failed
     if not resume_data:
-        retry_prompt = prompt + "\nREMEMBER: Output ONLY valid JSON."
-        ai_output = generate_with_huggingface(retry_prompt)
+        # Retry once
+        stricter_prompt = prompt + "\nREMEMBER: RETURN VALID JSON ONLY."
+        ai_output = generate_with_huggingface(stricter_prompt)
         resume_data = extract_json(ai_output)
 
     if not resume_data:
-        st.error("AI failed to return valid JSON. Try again.")
+        st.error("AI failed to generate valid JSON.")
         st.write(ai_output)
         st.stop()
 
-    st.subheader("Edit Resume")
+    st.success("Resume Generated Successfully!")
 
-    resume_data["summary"] = st.text_area(
-        "Summary",
-        value=resume_data["summary"]
-    )
+    st.subheader("Summary")
+    st.write(resume_data.get("summary", ""))
 
-    st.write("### Experience")
-    for i in range(len(resume_data["experience"])):
-        resume_data["experience"][i] = st.text_area(
-            f"Experience {i+1}",
-            value=resume_data["experience"][i]
-        )
+    st.subheader("Skills")
+    st.write(", ".join(resume_data.get("skills", [])))
 
-    st.write("### Projects")
-    for i in range(len(resume_data["projects"])):
-        resume_data["projects"][i] = st.text_area(
-            f"Project {i+1}",
-            value=resume_data["projects"][i]
-        )
-
-    skills_input = st.text_input(
-        "Skills (comma separated)",
-        value=", ".join(resume_data["skills"])
-    )
-    resume_data["skills"] = skills_input.split(",")
-
-    if st.button("Download PDF"):
-        pdf_path = generate_pdf(resume_data, user_info)
-
-        with open(pdf_path, "rb") as f:
-            st.download_button(
-                "Download Resume",
-                f,
-                file_name="resume.pdf"
-            )
+    st.subheader("Experience")
+    for exp in resume_data.get("experience", []):
+        st.markdown(f"### {exp.get('title')} - {exp.get('company')}")
+        for point in exp.get("points", []):
+            st.write(f"- {point}")
