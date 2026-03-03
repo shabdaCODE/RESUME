@@ -3,6 +3,17 @@ import requests
 import json
 import re
 
+import streamlit as st
+import requests
+
+HF_API_KEY = st.secrets["HF_API_KEY"]
+
+response = requests.get(
+    "https://huggingface.co/api/whoami-v2",
+    headers={"Authorization": f"Bearer {HF_API_KEY}"}
+)
+
+st.write(response.json())
 # =========================
 # CONFIG
 # =========================
