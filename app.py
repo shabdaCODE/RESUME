@@ -20,11 +20,12 @@ HEADERS = {
 }
 # Verified working free models on OpenRouter — tries each in order
 MODELS = [
-    "meta-llama/llama-3.1-70b-instruct:free",
-    "meta-llama/llama-3.2-11b-vision-instruct:free",
+    "deepseek/deepseek-r1:free",
+    "deepseek/deepseek-chat:free",
+    "meta-llama/llama-3.2-3b-instruct:free",
     "mistralai/mistral-7b-instruct:free",
     "google/gemma-2-9b-it:free",
-    "nousresearch/hermes-3-llama-3.1-405b:free",
+    "qwen/qwen-2-7b-instruct:free",
 ]
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -209,6 +210,7 @@ LATEX_SUFFIX = r"\end{document}"
 # LLM CALL WITH FALLBACK CHAIN
 # ══════════════════════════════════════════════════════════════════════════════
 def call_llm(prompt: str, max_tokens: int = 2500) -> str:
+    import time
     last_error = "No model responded"
     for model in MODELS:
         try:
@@ -221,7 +223,11 @@ def call_llm(prompt: str, max_tokens: int = 2500) -> str:
             r = requests.post(API_URL, headers=HEADERS, json=payload, timeout=90)
             if r.status_code == 200:
                 return r.json()["choices"][0]["message"]["content"].strip()
-            last_error = f"{model}: {r.status_code} – {r.text[:200]}"
+            elif r.status_code == 429:
+                time.sleep(3)
+                last_error = f"{model}: rate limited, skipping"
+            else:
+                last_error = f"{model}: {r.status_code} - {r.text[:150]}"
         except Exception as e:
             last_error = f"{model}: {str(e)}"
     return f"ERROR: {last_error}"
