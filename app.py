@@ -3,15 +3,10 @@ import requests
 import json
 import re
 
-import streamlit as st
-st.write("Secrets keys:", list(st.secrets.keys()))
-st.write("Token starts with:", st.secrets["HF_API_KEY"][:5])
-st.stop()
-
 HF_API_KEY = st.secrets["HF_API_KEY"]
 
 MODEL = "mistralai/Mistral-7B-Instruct-v0.2"
-API_URL = f"https://router.huggingface.co/hf-inference/models/{MODEL}"
+API_URL = f"https://api-inference.huggingface.co/models/{MODEL}"
 
 headers = {
     "Authorization": f"Bearer {HF_API_KEY}",
