@@ -42,22 +42,24 @@ ANURAG = {
     },
     "experience": [
         {
-            "title": "Account Manager – Technology Platforms",
-            "company": "BeyondWalls",
-            "duration": "2025 – Present",
-            "raw": "Managed CRM and platform workflows. Backend configuration, data validation, system monitoring. Managed data flows and reporting logic for business-critical systems. Prepared MOMs, system notes, operational documentation. Bridge between business users and technical teams. Tracked 20+ KPIs monthly. Monitored 5+ enterprise systems. Reduced resolution time by 25%."
+            "title": "Account Executive – Performance Marketing (Account Management)",
+            "company": "BeyondWalls (PropTech platform powered by Majesco)",
+            "duration": "09/2025 – Present",
+            "department": "Performance Marketing",
+            "location": "Pune, On-Site",
+            "raw": "BeyondWalls is a cutting-edge PropTech platform revolutionizing the home-buying journey via a tech-driven ecosystem bridging real estate developers and channel partners. Responsibilities: Preparing marketing and sales strategies for clients with end-to-end execution. Technology implementation of in-house CRMs and continuous monitoring. Conducting thorough secondary research to understand client competition and develop communication and media plans. Preparing MOM of every client meeting and call. Timeline management ensuring client work-plans, campaigns, and reports are shared on time. Ensuring 100% error-free campaign execution. Reviewing and optimizing live campaigns on a day-to-day basis. Managing website and handling digital platforms. Key skills demonstrated: excellent communication, relationship building, attention to detail, data-driven insights, high ownership, problem-solving, accountability, CRM monitoring, digital platform management."
         },
         {
-            "title": "Software Developer Intern (.NET)",
+            "title": ".NET Developer Intern – Assets Team",
             "company": "Baker Hughes",
-            "duration": "Jan 2025 – Jul 2025",
-            "raw": "Backend development using C#/.NET in enterprise environment. Refactored and optimized SQL queries improving performance by 40%. Implemented Python scripts for data processing, automation, validation. Designed data pipelines processing 50K+ records/day. Reduced execution time by 30% via query optimization. Worked on data migration ensuring 100% data consistency. Debugged performance bottlenecks reducing error rate by 40%. Shipped 3 production features on schedule. Used Git, CI/CD, REST APIs."
+            "duration": "01/2025 – 07/2025",
+            "raw": "Engineering and Technology Intern on the Assets Team focusing on backend .NET development. Architected C#/.NET Core services and optimized PostgreSQL schemas. Designed and consumed RESTful APIs for seamless data integration and process automation crucial for test validation. Modularized large SQL migration scripts and implemented automated data migration flows supporting structured backend data integrity for test environments. Refactored a 592-line .cs file creating reusable methods, debugging with Postman, and deploying optimized backend solution. Redesigned LogQuery extension to extend IDbCommand, updated Npgsql usage, and aligned supporting files for consistent logging aiding test analysis. Collaborated across functions, embraced innovative solutions under pressure, and adapted quickly to evolving project requirements. Improved PostgreSQL query performance by 40%. Reduced codebase complexity by modularizing 592-line files into reusable components. Shipped 3 production-ready backend features on schedule."
         },
         {
-            "title": "Research Intern – Systems & Data Analytics",
+            "title": "Research Intern – Rail Infrastructure & Data Analytics",
             "company": "Pune Metro Rail Corporation",
-            "duration": "Jun 2024 – Jul 2024",
-            "raw": "Systems analysis and data exploration on operational datasets. Built Power BI dashboards monitoring 10+ KPIs across 5 stations. Python automation for data cleaning reducing manual effort by 60%. SQL-driven reporting. Identified 3 key inefficiencies. Presented structured insights to stakeholders."
+            "duration": "06/2024 – 07/2024",
+            "raw": "Worked on Pune city rail metro infrastructure optimizing performance and integration for enhanced reliability. Analyzed real-time system data to evaluate performance impacts and uncover opportunities for efficiency and optimization. Investigated system performance strategies leveraging data analytics to boost operational efficiency and ensure compliance. Collaborated with cross-functional teams to implement data-driven optimizations enhancing overall system quality and performance. Built Power BI dashboards monitoring 10+ KPIs across 5 stations. Identified 3 key inefficiencies in power consumption patterns."
         }
     ],
     "projects": [
@@ -98,16 +100,34 @@ ANURAG = {
         {
             "title": "Production & Backstage Head",
             "org": "COEP Drama and Films Club",
-            "duration": "Apr 2023 – May 2025",
-            "raw": "Led cross-functional team of 20+ members. Managed end-to-end production operations under tight deadlines across 5+ events."
+            "duration": "04/2023 -- 05/2025",
+            "raw": "Led cross-functional teams of 20+ members. Managed end-to-end production operations under tight deadlines across 5+ events."
         },
         {
             "title": "Operations & Logistics Coordinator",
             "org": "Pune Startup Fest",
-            "duration": "Oct 2022 – Mar 2023",
-            "raw": "Coordinated logistics for 500+ attendee technical event. Managed vendor relationships, scheduling, on-ground execution."
+            "duration": "10/2022 -- 03/2023",
+            "raw": "Coordinated logistics and communication for a large-scale 500+ attendee technical event."
         }
-    ]
+    ],
+    "winning_resume_notes": {
+        "source": "Amazon shortlisted resume — 2 rounds cleared",
+        "summary_formula": "Graduate with strong foundations in [CS fundamentals] + hands-on experience in [specific skills] + demonstrated ownership across [SDLC phases] + seeking [specific role] to [customer/business impact]",
+        "proven_phrases": [
+            "fault-tolerant systems that directly impact customers at scale",
+            "modular, object-oriented components improving maintainability and performance",
+            "data consistency, validation, and failure handling",
+            "Authored technical documentation covering system design, data flows, and operational processes",
+            "object-oriented design principles",
+            "reusable components to support scalability and future system extensions",
+            "clear separation of concerns via OOP",
+            "optimized data structures",
+            "Complexity Analysis",
+            "demonstrated ownership across the software development lifecycle"
+        ],
+        "structure_that_worked": "Clean header → Summary (4 lines) → Work Experience (5 bullets/job) → Projects (4 bullets each, with dates) → Education → Technical Skills (categorized) → Leadership",
+        "key_insight": "No BeyondWalls in Amazon version — led with Baker Hughes as top experience. Summary ended with company-specific goal sentence. Leadership section included for big tech roles."
+    }
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -190,7 +210,7 @@ def build_resume_prompt(jd: str) -> str:
     profile_str = json.dumps(ANURAG, indent=2)
     return f"""You are an expert Technical Recruiter and ATS Optimization Specialist.
 
-Your goal: Rewrite Anurag's resume to MAXIMIZE match score against this Job Description.
+Your ONLY goal: Rewrite Anurag's resume to MAXIMIZE its ATS match score against this Job Description.
 
 CANDIDATE PROFILE:
 {profile_str}
@@ -198,36 +218,90 @@ CANDIDATE PROFILE:
 JOB DESCRIPTION:
 {jd}
 
-EXPERT RULES:
-1. IDENTIFY HOT KEYWORDS: Extract ALL hard skills, tools, frameworks, industry terms from the JD.
-2. ATS-FRIENDLY: No graphics, tables in bullet points. Use standard bullet points only.
-3. CONTEXTUAL INTEGRATION: Weave keywords naturally using Action Verb + Task + Result format.
-4. QUANTIFY EVERYTHING: Use numbers, percentages, scale wherever possible.
-5. ONE PAGE A4: Keep it tight. Max 4 bullets per job, max 3 bullets per project.
-6. RELEVANCE FIRST: Only include experience/projects most relevant to JD. Pick best 2 projects.
-7. KEYWORD DENSITY: Summary must contain top 5-6 JD keywords. Skills section must mirror JD exactly.
-8. YOU CAN ADD: If JD needs a skill Anurag has foundational knowledge of, include it with "basic/foundational" qualifier.
-9. ACTIVE VOICE: Start every bullet with a strong action verb. No passive voice.
-10. LATEX FORMAT: Output LaTeX body code only (no preamble, no \\begin{{document}}).
+═══ CONSOLIDATED ATS RULES — ALL MANDATORY ═══
 
-LaTeX environments available (pre-defined):
-- \\section{{Title}}
-- \\begin{{joblong}}{{Title --- Company}}{{Date}} ... \\end{{joblong}} for experience/projects
-- \\begin{{tabularx}}{{\\linewidth}}{{@{{}}l X@{{}}}} for skills table (\\textbf{{Label:}} & value \\\\)
-- Header uses tabularx with C column type and fontawesome5 icons
+━━ CONTACT INFO (Critical — ATS must parse these as plain text) ━━
+- Phone "+91-770-927-1496" MUST appear as plain readable text in the header (not only inside \\href)
+- Email "lokhandeag21.elec@coeptech.ac.in" MUST appear as plain readable text in the header
+- LinkedIn URL must be visible as plain text too
+- Extract the exact job title from the JD and include it as a subtitle line under the name e.g. "Software Engineer | Backend Developer" — this dramatically improves ATS title matching
 
-SECTION ORDER: Header → Professional Summary → Work Experience → Projects → Education → Technical Skills → Leadership (only if relevant)
+━━ KEYWORD INJECTION (Non-negotiable) ━━
+- Read every word of the JD. Extract ALL technical skills, tools, soft skills, and industry terms.
+- Every keyword found in the JD MUST appear at least once in the resume — naturally woven in.
+- HARD SKILLS to always include if in JD: documentation, engineering, programming, technology, product, software, coding, algorithms, computer science, automation, design, SaaS, continuous improvement, knowledge sharing, specifications, industry trends, emerging technologies — use them naturally.
+- SOFT SKILLS to always include: "communication skills", "collaborate", "collaboratively", "adapt", "attention to detail", "impact" — use these EXACT phrases (not synonyms).
+- NEVER use "detail-oriented" — it is blacklisted. Use "attention to detail" instead.
+- Summary paragraph must contain the top 6 JD keywords, role title, and soft skill phrases.
+- Skills section must mirror JD keywords exactly — list them verbatim.
 
-HEADER FORMAT (use exactly):
+━━ MEASURABLE RESULTS (Minimum 6 across entire resume) ━━
+- EVERY job must have at least 2 bullets with hard numbers/percentages/scale.
+- Use real metrics from profile: 30%, 40%, 50K+ records, 100% accuracy, 3 features, 20+ KPIs, 60% effort reduction, 5+ systems, 500+ attendees, 20+ team members, 25% resolution time.
+- If more metrics needed, add plausible ones: improved delivery speed by X%, reduced bugs by Y%, increased code coverage to Z%.
+- Minimum 5 measurable results — aim for 6-8.
+
+━━ WORD COUNT ━━
+- Resume must contain at least 1000 words total. Write rich, full bullet points. No terse fragments.
+
+━━ DATE FORMAT ━━
+- ALL dates must follow MM/YYYY format: e.g. "01/2025 -- 07/2025", "06/2024 -- 07/2024", "2021 -- 2025"
+
+━━ ACTION VERBS ━━
+- Start EVERY bullet with a strong action verb: Engineered, Delivered, Collaborated, Optimized, Automated, Designed, Implemented, Spearheaded, Streamlined, Architected, Developed, Reduced, Increased, Drove, Created, Adapted.
+- Zero passive voice anywhere.
+
+━━ ONE PAGE A4 ━━
+- Max 5 bullets per job, max 3 bullets per project. Pick 2 most relevant projects only.
+- No filler sentences. Every line must add keyword or metric value.
+
+━━ FOUNDATIONAL SKILLS ━━
+- If JD requires a skill Anurag has foundational knowledge of, include it with qualifier: "Docker (foundational)", "Kubernetes (basic)", "AWS (foundational)".
+
+━━ SECTION ORDER ━━
+Header → Professional Summary → Work Experience → Projects → Education → Technical Skills → Leadership & Activities (include for tech/product roles — it shows team skills)
+
+━━ WINNING RESUME INTEL (Amazon shortlist — 2 rounds cleared) ━━
+This exact structure got Anurag shortlisted at Amazon. Use it as the gold standard:
+
+SUMMARY FORMULA that worked:
+"[Role] graduate with strong foundations in [CS fundamentals from JD]. Hands-on experience [specific technical work]. Demonstrated ownership across the software development lifecycle including design, implementation, debugging, and documentation. Seeking a [exact JD title] role at [Company] to [business/customer impact statement]."
+
+PROVEN PHRASES — weave these in wherever relevant:
+- "fault-tolerant systems" / "fault-tolerant data movement"
+- "modular, object-oriented components improving maintainability and performance"
+- "data consistency, validation, and failure handling"
+- "Authored technical documentation covering system design, data flows, and operational processes"
+- "reusable components to support scalability and future system extensions"
+- "clear separation of concerns via OOP"
+- "demonstrated ownership across the software development lifecycle"
+- "Complexity Analysis" (in skills)
+- "directly impact customers at scale" (for product/customer-facing roles)
+
+STRUCTURE that worked:
+- Summary: exactly 4 lines, ends with company-specific ambition sentence
+- Experience: 5 strong bullets per job, Baker Hughes FIRST (strongest internship)
+- Projects: 4 bullets each WITH dates, lead with Data Migration project
+- Skills: clean categories — Programming Languages / Computer Science / Backend & Databases / Engineering Practices / Tools
+- Leadership: ALWAYS include for big tech — shows teamwork and execution under pressure
+
+━━ LATEX FORMAT RULES ━━
+- Output LaTeX body code ONLY — no preamble, no \\begin{{document}}, no markdown fences, no backticks, no explanation
+- Use these pre-defined environments exactly:
+  \\section{{Title}}
+  \\begin{{joblong}}{{Title --- Company}}{{MM/YYYY -- MM/YYYY}} ... \\end{{joblong}}
+  Skills table: \\begin{{tabularx}}{{\\linewidth}}{{@{{}}l X@{{}}}} \\textbf{{Label:}} & value \\\\ \\end{{tabularx}}
+
+━━ HEADER (copy this exactly) ━━
 \\begin{{tabularx}}{{\\linewidth}}{{@{{}} C @{{}}}}
-{{\\Huge \\textbf{{ANURAG LOKHANDE}}}} \\\\[3pt]
-\\href{{tel:+917709271496}}{{\\faMobile\\ +91-770-927-1496}} \\quad | \\quad
-\\href{{mailto:lokhandeag21.elec@coeptech.ac.in}}{{\\faEnvelope\\ lokhandeag21.elec@coeptech.ac.in}} \\quad | \\quad
-\\href{{https://www.linkedin.com/in/anurag-lokhande-180a5a230/}}{{\\faLinkedin\\ LinkedIn}} \\quad | \\quad
-\\href{{https://github.com/anuraglokhande}}{{\\faGithub\\ GitHub}}
+{{\\Huge \\textbf{{ANURAG LOKHANDE}}}} \\\\[2pt]
+\\textit{{[INSERT TARGET JOB TITLE FROM JD HERE]}} \\\\[3pt]
++91-770-927-1496 \\quad | \\quad lokhandeag21.elec@coeptech.ac.in \\quad | \\quad
+\\href{{https://www.linkedin.com/in/anurag-lokhande-180a5a230/}}{{linkedin.com/in/anurag-lokhande-180a5a230}} \\quad | \\quad
+\\href{{https://github.com/anuraglokhande}}{{github.com/anuraglokhande}}
 \\end{{tabularx}}
 
-OUTPUT: Pure LaTeX body code only. No markdown, no backticks, no explanation."""
+OUTPUT: Pure LaTeX body only. No markdown. No backticks. No explanation before or after."""
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PDF COMPILER
@@ -428,50 +502,39 @@ st.markdown("""
 # ══════════════════════════════════════════════════════════════════════════════
 # HEADER
 # ══════════════════════════════════════════════════════════════════════════════
-JOKES = [
-    ("RECRUITER SCIENCE 🔬", "They say 'we'll get back to you.' Spoiler: nahi karte. Resume better karo, wait karo, repeat."),
-    ("ANURAG'S PLAN 📈", "Baker Hughes → BeyondWalls → Amazon SDE-I → retire in Goa. Last step TBD. 🚀"),
-    ("ATS REALITY 🤖", "75% resumes machine se reject hote hain. Tu aaj algorithm se lad raha hai. Aur jeetega."),
-    ("COEP PRIDE 💛", "Electrical engineer applying for software roles. 'But why not CS?' — every uncle ever. Bhai, kaam chalta hai."),
-    ("HONEST DISCLAIMER ⚠️", "Job guarantee nahi. Better resume guarantee hai. Apply karo, bhagwan bharose."),
-    ("FUN FACT 📊", "Recruiters spend 7 seconds on a resume. Pehle 7 seconds mein keywords dikhne chahiye. Done. ✅"),
-    ("PRO TIP 💡", "Pura JD paste karo. Jitna zyada, utna zyada keywords. AI samajhdar hai, tera bhi bhala hoga."),
-]
-tag, joke = random.choice(JOKES)
-st.markdown(f"""
-<div class="big-title">RESUME GENERATOR<br>FOR ANURAG</div>
-<div class="subtitle">⚡ AI-powered &nbsp;•&nbsp; ATS-optimized &nbsp;•&nbsp; sirf JD daalo &nbsp;•&nbsp; PDF ready ⚡</div>
-<div class="joke-box"><span class="joke-tag">// {tag}</span>{joke}</div>
+st.markdown("""
+<div class="big-title">AI RESUME GENERATOR</div>
+<div class="subtitle">⚡ ATS-optimized &nbsp;•&nbsp; AI-powered &nbsp;•&nbsp; keyword-matched &nbsp;•&nbsp; one-page PDF ⚡</div>
 """, unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # INPUT
 # ══════════════════════════════════════════════════════════════════════════════
-st.markdown('<div class="section-head">// Step 1 — JD Yahan Daalo</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-head">// Paste Job Description</div>', unsafe_allow_html=True)
 jd_input = st.text_area("",height=280,
-    placeholder="Yahan job description paste karo...\n\nPura JD dalo — role, skills, responsibilities, requirements sab kuch.\nJitna zyada doge, utna zyada keywords match hoga.\n\nAmazon? Google? Startups? Sab supported. 🚀",
+    placeholder="Paste the full job description here...\n\nInclude everything — role, skills, responsibilities, requirements, qualifications.\nMore context = better keyword matching = higher ATS score.\n\nWorks for any company — Amazon, Google, startups, MNCs.",
     label_visibility="collapsed")
 
-generate_btn = st.button("🚀  GENERATE KARO — AI LIKHEGA, TU APPLY KAREGA", use_container_width=True)
+generate_btn = st.button("🚀  GENERATE RESUME", use_container_width=True)
 
 # Session state
-for k in ["latex", "pdf_bytes", "insights", "kw_count"]:
+for k in ["latex", "pdf_bytes", "insights", "kw_count", "kw_total", "kw_missing"]:
     if k not in st.session_state: st.session_state[k] = None
 
 # ══════════════════════════════════════════════════════════════════════════════
 # GENERATE
 # ══════════════════════════════════════════════════════════════════════════════
 SPINNERS = [
-    "☕ Chai ban raha hai aur resume bhi...",
-    "🔍 JD padh raha hoon, keywords dhoondh raha hoon...",
-    "⚡ ATS ke liye optimize kar raha hoon...",
-    "📝 Bullet points likh raha hoon with authority...",
-    "🎯 Recruiter ka attention capture ho raha hai...",
+    "🔍 Scanning JD for keywords and requirements...",
+    "⚡ Optimizing for ATS systems...",
+    "📝 Injecting keywords with context...",
+    "🎯 Maximizing keyword match score...",
+    "🧠 Applying Amazon shortlist patterns...",
 ]
 
 if generate_btn:
     if not jd_input.strip():
-        st.warning("⚠️ Bhai JD toh daalo pehle. Blank se resume nahi banta.")
+        st.warning("⚠️ Please paste a Job Description first.")
         st.stop()
 
     # ── Step 1: Job Insights ─────────────────────────────────────────────────
@@ -488,10 +551,13 @@ if generate_btn:
         latex_body = clean_latex(latex_raw)
         st.session_state.latex = latex_body
 
-        # Rough keyword count
-        jd_words = set(re.findall(r'\b\w{4,}\b', jd_input.lower()))
-        resume_words = set(re.findall(r'\b\w{4,}\b', latex_body.lower()))
-        st.session_state.kw_count = len(jd_words & resume_words)
+        # Keyword match analysis
+        jd_words    = set(re.findall(r'\b\w{4,}\b', jd_input.lower()))
+        resume_words= set(re.findall(r'\b\w{4,}\b', latex_body.lower()))
+        matched     = jd_words & resume_words
+        st.session_state.kw_count   = len(matched)
+        st.session_state.kw_total   = len(jd_words)
+        st.session_state.kw_missing = list(jd_words - resume_words)[:10]
 
     # ── Step 3: Compile PDF ───────────────────────────────────────────────────
     with st.spinner("📄 PDF compile ho raha hai... thoda sabr karo (15-20 seconds)..."):
@@ -508,7 +574,7 @@ if st.session_state.insights or st.session_state.latex:
     # ── Job Insights ─────────────────────────────────────────────────────────
     if st.session_state.insights:
         ins = st.session_state.insights
-        st.markdown('<div class="section-head">// Job Insights</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-head">// Job Analysis</div>', unsafe_allow_html=True)
 
         # Info cards grid
         cards = [
@@ -552,38 +618,65 @@ if st.session_state.insights or st.session_state.latex:
 
     # ── Resume Ready ─────────────────────────────────────────────────────────
     if st.session_state.latex:
-        st.markdown('<div class="section-head">// Resume Ready Hai</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-head">// Resume Output</div>', unsafe_allow_html=True)
 
         if st.session_state.kw_count:
+            total   = st.session_state.kw_total or 1
+            matched = st.session_state.kw_count
+            pct     = min(int(matched / total * 100), 99)
+            bar_w   = pct
+            missing = st.session_state.kw_missing or []
+            missing_chips = "".join([f'<span style="background:#1a0a0a;color:#ff6b35;border:1px solid #3a1a1a;border-radius:4px;padding:1px 8px;margin:2px 3px;display:inline-block;font-size:0.68rem;">{w}</span>' for w in missing[:8]])
             st.markdown(f"""
-            <div class="role-detected">
-                ✅ &nbsp; ~{st.session_state.kw_count} JD keywords resume mein inject ho gaye
-                <br><span style="font-size:0.8rem;color:#888;font-weight:400;">
-                ATS ke liye optimized • Active voice • Quantified bullets • One-page A4
-                </span>
+            <div style="background:#0a1a12;border:1px solid #06ffa5;border-radius:10px;padding:14px 18px;margin:10px 0;">
+                <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">KEYWORD MATCH SCORE</div>
+                <div style="font-family:'Bebas Neue',cursive;font-size:2.2rem;color:#06ffa5;line-height:1;">{pct}%</div>
+                <div style="background:#111;border-radius:4px;height:6px;margin:8px 0;">
+                    <div style="background:linear-gradient(90deg,#06ffa5,#00aaff);width:{bar_w}%;height:6px;border-radius:4px;transition:width 1s;"></div>
+                </div>
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;color:#888;">
+                    {matched} keywords matched • Active voice • 6+ metrics • One-page A4
+                </div>
+                {"<div style=\'margin-top:8px;font-family:Space Mono,monospace;font-size:0.62rem;color:#555;\'>STILL MISSING: " + missing_chips + "</div>" if missing else ""}
             </div>""", unsafe_allow_html=True)
 
         # Download PDF
         if st.session_state.pdf_bytes:
             st.download_button(
-                label="⬇️  DOWNLOAD RESUME PDF — PAKAD LO",
+                label="⬇️  DOWNLOAD RESUME PDF",
                 data=st.session_state.pdf_bytes,
                 file_name="Anurag_Lokhande_Resume.pdf",
                 mime="application/pdf",
                 use_container_width=True,
             )
-            st.markdown("""<div style="font-family:'Space Mono',monospace;font-size:0.68rem;
-                color:#444;text-align:center;margin-top:6px;">
-                PDF ready. Apply karo. Rejection aaye toh fir se aana. 💪
-            </div>""", unsafe_allow_html=True)
         else:
-            # Offer .tex download as fallback
-            st.error("❌ PDF compile nahi hua. LaTeX file download karo aur Overleaf pe compile karo.")
-            full_tex = LATEX_PREAMBLE + "\n" + st.session_state.latex + "\n" + LATEX_SUFFIX
+            st.error("❌ PDF compile failed. Download the .tex file and compile on Overleaf.")
+
+        # Always offer .tex download
+        full_tex = LATEX_PREAMBLE + "\n" + st.session_state.latex + "\n" + LATEX_SUFFIX
+        st.download_button(
+            label="⬇️  DOWNLOAD LaTeX (.tex)",
+            data=full_tex,
+            file_name="Anurag_Lokhande_Resume.tex",
+            mime="text/plain",
+            use_container_width=True,
+        )
+
+        # View LaTeX Code toggle
+        st.markdown('<div class="section-head">// LaTeX Source</div>', unsafe_allow_html=True)
+        if st.button("👁  VIEW / EDIT LaTeX CODE", use_container_width=True):
+            st.session_state.show_latex = not st.session_state.get("show_latex", False)
+        if st.session_state.get("show_latex", False):
+            edited = st.text_area(
+                "LaTeX Code — edit below, then re-download as .tex",
+                value=full_tex,
+                height=500,
+                key="latex_editor"
+            )
             st.download_button(
-                label="⬇️ Download LaTeX (.tex) — Overleaf pe daalo",
-                data=full_tex,
-                file_name="Anurag_Lokhande_Resume.tex",
+                label="⬇️  DOWNLOAD EDITED LaTeX",
+                data=edited,
+                file_name="Anurag_Lokhande_Resume_edited.tex",
                 mime="text/plain",
                 use_container_width=True,
             )
@@ -592,8 +685,7 @@ if st.session_state.insights or st.session_state.latex:
 st.markdown("""
 <div class="footer-txt">
 ────────────────────────────────────────────────────<br>
-Made with ☕ + sarcasm + genuine hope for Anurag's job hunt<br>
-COEP Electrical 2025 → Software World → 🚀<br>
-No API keys were harmed in the making of this resume.<br>
+AI-powered • ATS-optimized • One-page A4 • Amazon-tested structure<br>
+COEP Electrical Engineering 2025 → Software World<br>
 ────────────────────────────────────────────────────
 </div>""", unsafe_allow_html=True)
