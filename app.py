@@ -221,7 +221,12 @@ def call_llm(prompt: str, max_tokens: int = 2500) -> str:
             }
             r = requests.post(API_URL, headers=HEADERS, json=payload, timeout=90)
             if r.status_code == 200:
-                return r.json()["choices"][0]["message"]["content"].strip()
+                data = r.json()
+                text = data.get("choices", [{}])[0].get("message", {}).get("content")
+                if text and text.strip():
+                    return text.strip()
+                last_error = f"{model}: empty response"
+                continue
             elif r.status_code == 429:
                 time.sleep(3)
                 last_error = f"{model}: rate limited, skipping"
