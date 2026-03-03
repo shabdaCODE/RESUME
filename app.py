@@ -9,7 +9,7 @@ import re
 
 OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
 
-MODEL = "mistralai/mistral-7b-instruct"
+MODEL = "microsoft/phi-3-mini-4k-instruct"
 
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
