@@ -3,6 +3,10 @@ import requests
 import json
 import re
 
+import streamlit as st
+
+st.write("Secrets dict:", dict(st.secrets))
+st.stop()
 # =========================
 # CONFIG
 # =========================
