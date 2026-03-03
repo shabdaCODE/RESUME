@@ -2,29 +2,15 @@ import streamlit as st
 import requests
 import json
 import re
-import os
-from dotenv import load_dotenv
 
 # =========================
-# LOAD ENV VARIABLES
+# CONFIG
 # =========================
-load_dotenv()
 
-HF_API_KEY = os.getenv("HF_API_KEY")
+HF_API_KEY = st.secrets["HF_API_KEY"]
 
 MODEL = "mistralai/Mistral-7B-Instruct-v0.2"
 API_URL = f"https://router.huggingface.co/hf-inference/models/{MODEL}"
-
-# =========================
-# VALIDATE API KEY
-# =========================
-if not HF_API_KEY:
-    st.error("HF_API_KEY not found. Check your .env file.")
-    st.stop()
-
-if HF_API_KEY == "RESUMEFORME":
-    st.error("Old token detected. Update your HF_API_KEY in .env file.")
-    st.stop()
 
 headers = {
     "Authorization": f"Bearer {HF_API_KEY}",
@@ -34,6 +20,7 @@ headers = {
 # =========================
 # HUGGING FACE CALL
 # =========================
+
 def generate_with_huggingface(prompt):
     payload = {
         "inputs": prompt,
@@ -58,8 +45,9 @@ def generate_with_huggingface(prompt):
         return str(data)
 
 # =========================
-# SAFE JSON EXTRACTOR
+# SAFE JSON EXTRACTION
 # =========================
+
 def extract_json(text):
     try:
         return json.loads(text)
@@ -84,16 +72,17 @@ def extract_json(text):
 # =========================
 # PROMPT BUILDER
 # =========================
+
 def build_resume_prompt(jd, user_info):
     return f"""
-You are an expert resume writer.
+You are a professional resume writer.
 
 Create an ATS-optimized resume tailored to this job description.
 
 Job Description:
 {jd}
 
-Candidate Information:
+Candidate Info:
 {json.dumps(user_info)}
 
 IMPORTANT:
@@ -120,6 +109,7 @@ Format:
 # =========================
 # STREAMLIT UI
 # =========================
+
 st.title("AI Resume Generator")
 
 jd = st.text_area("Paste Job Description")
@@ -150,6 +140,7 @@ else:
 # =========================
 # GENERATE BUTTON
 # =========================
+
 if st.button("Generate Resume"):
 
     if not jd.strip():
