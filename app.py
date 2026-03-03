@@ -10,7 +10,13 @@ import re
 OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
 
 # ✅ Free models that actually work on OpenRouter
-MODEL = "meta-llama/llama-3.1-8b-instruct:free"
+# Free models — tries each one in order until one works
+MODELS = [
+    "meta-llama/llama-3.3-70b-instruct:free",   # Best free model (March 2026)
+    "mistralai/mistral-7b-instruct:free",         # Reliable fallback
+    "google/gemma-3-12b-it:free",                 # Google fallback
+    "openrouter/auto",                            # Let OpenRouter pick any free model
+]
 
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
@@ -26,20 +32,25 @@ headers = {
 # =========================
 
 def generate_with_openrouter(prompt):
-    payload = {
-        "model": MODEL,
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.3,
-        "max_tokens": 1200
-    }
-    try:
-        response = requests.post(API_URL, headers=headers, json=payload, timeout=60)
-        if response.status_code != 200:
-            return {"error": f"Status {response.status_code}: {response.text}"}
-        data = response.json()
-        return data["choices"][0]["message"]["content"]
-    except Exception as e:
-        return {"error": str(e)}
+    """Try each free model in order — first one that works wins."""
+    last_error = "No models available"
+    for model in MODELS:
+        try:
+            payload = {
+                "model": model,
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.3,
+                "max_tokens": 1200
+            }
+            response = requests.post(API_URL, headers=headers, json=payload, timeout=60)
+            if response.status_code == 200:
+                data = response.json()
+                return data["choices"][0]["message"]["content"]
+            else:
+                last_error = f"{model} → {response.status_code}: {response.text[:200]}"
+        except Exception as e:
+            last_error = f"{model} → {str(e)}"
+    return {"error": last_error}
 
 # =========================
 # SAFE JSON EXTRACTION
