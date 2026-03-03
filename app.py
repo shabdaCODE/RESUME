@@ -5,7 +5,7 @@ import requests
 import streamlit as st
 from dotenv import load_dotenv
 
-# PDF (Cloud Safe)
+# PDF
 from reportlab.platypus import (
     SimpleDocTemplate,
     Paragraph,
@@ -18,17 +18,17 @@ from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import LETTER
 
 # ===============================
-# LOAD ENV
+# ENV
 # ===============================
 
 load_dotenv()
 HF_API_KEY = os.getenv("HF_API_KEY")
 
-# ===============================
-# HUGGING FACE CONFIG
-# ===============================
-
 HF_MODEL_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
+
+# ===============================
+# HUGGING FACE CALL
+# ===============================
 
 def generate_with_huggingface(prompt):
     headers = {"Authorization": f"Bearer {HF_API_KEY}"}
@@ -37,7 +37,7 @@ def generate_with_huggingface(prompt):
         "inputs": prompt,
         "parameters": {
             "max_new_tokens": 900,
-            "temperature": 0.7,
+            "temperature": 0.5,
             "return_full_text": False
         }
     }
@@ -55,13 +55,29 @@ def generate_with_huggingface(prompt):
 # ===============================
 
 def extract_json(text):
+    # First try normal parse
     try:
         return json.loads(text)
     except:
-        match = re.search(r"\{.*\}", text, re.DOTALL)
-        if match:
-            return json.loads(match.group())
-        return None
+        pass
+
+    # Try to safely extract JSON block
+    start = text.find("{")
+    end = text.rfind("}")
+
+    if start != -1 and end != -1:
+        candidate = text[start:end + 1]
+
+        # Fix common LLM mistakes
+        candidate = re.sub(r",\s*}", "}", candidate)
+        candidate = re.sub(r",\s*]", "]", candidate)
+
+        try:
+            return json.loads(candidate)
+        except:
+            return None
+
+    return None
 
 # ===============================
 # PROMPT
@@ -84,9 +100,14 @@ Requirements:
 - Bullet format
 - Professional tone
 - Strong action verbs
-- No extra explanation text
+- No explanations
+- No markdown
+- No extra text
 
-Return STRICT JSON only:
+Return ONLY valid JSON.
+JSON must be syntactically correct.
+
+Format:
 {{
   "summary": "text",
   "experience": ["bullet1", "bullet2"],
@@ -154,19 +175,16 @@ def generate_pdf(data, user_info):
 
 st.title("AI Resume Generator")
 
-# ===== Checkbox =====
-
+# Checkbox
 is_me = st.checkbox("Are you me?")
 
 if is_me:
-    # Auto-fill your details
     user_info = {
         "name": "Anurag Lokhande",
         "email": "your_email@example.com",
         "phone": "your_phone_number"
     }
     st.success("Using saved profile details.")
-
 else:
     st.subheader("Enter Personal Details")
     name = st.text_input("Name")
@@ -179,17 +197,21 @@ else:
         "phone": phone
     }
 
-# ===== JD Input =====
-
 st.subheader("Paste Job Description")
 jd = st.text_area("Job Description", height=250)
 
-# ===== Generate =====
+# ===============================
+# GENERATE
+# ===============================
 
 if st.button("Generate Resume"):
 
     if not HF_API_KEY:
-        st.error("HuggingFace API Key not found in environment.")
+        st.error("HF_API_KEY not found in environment.")
+        st.stop()
+
+    if not jd.strip():
+        st.error("Please paste a Job Description.")
         st.stop()
 
     with st.spinner("Generating Resume..."):
@@ -198,8 +220,14 @@ if st.button("Generate Resume"):
 
     resume_data = extract_json(ai_output)
 
+    # Retry once if failed
     if not resume_data:
-        st.error("AI did not return valid JSON.")
+        retry_prompt = prompt + "\nREMEMBER: Output ONLY valid JSON."
+        ai_output = generate_with_huggingface(retry_prompt)
+        resume_data = extract_json(ai_output)
+
+    if not resume_data:
+        st.error("AI failed to return valid JSON. Try again.")
         st.write(ai_output)
         st.stop()
 
