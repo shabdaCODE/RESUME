@@ -3,6 +3,10 @@ import requests
 import json
 import re
 
+import streamlit as st
+
+HF_API_KEY = st.secrets["HF_API_KEY"]
+
 MODEL = "mistralai/Mistral-7B-Instruct-v0.2"
 API_URL = f"https://router.huggingface.co/hf-inference/models/{MODEL}"
 
