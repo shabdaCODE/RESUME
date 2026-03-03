@@ -6,7 +6,13 @@ import re
 HF_API_KEY = st.secrets["HF_API_KEY"]
 
 MODEL = "mistralai/Mistral-7B-Instruct-v0.2"
-API_URL = f"https://api-inference.huggingface.co/models/{MODEL}"
+
+API_URL = f"https://router.huggingface.co/hf-inference/models/{MODEL}"
+
+headers = {
+    "Authorization": f"Bearer {HF_API_KEY}",
+    "Content-Type": "application/json"
+}
 
 headers = {
     "Authorization": f"Bearer {HF_API_KEY}",
