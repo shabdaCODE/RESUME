@@ -16,17 +16,19 @@ HEADERS = {
     "Authorization": f"Bearer {OPENROUTER_API_KEY}",
     "Content-Type": "application/json",
     "HTTP-Referer": "https://streamlit.io",
-    "X-Title": "Anurag Resume Generator"
+    "X-Title": "Resume Generator"
 }
+# Verified working free models on OpenRouter — tries each in order
 MODELS = [
-    "meta-llama/llama-3.3-70b-instruct:free",
+    "meta-llama/llama-3.1-70b-instruct:free",
+    "meta-llama/llama-3.2-11b-vision-instruct:free",
     "mistralai/mistral-7b-instruct:free",
-    "google/gemma-3-12b-it:free",
-    "openrouter/auto",
+    "google/gemma-2-9b-it:free",
+    "nousresearch/hermes-3-llama-3.1-405b:free",
 ]
 
 # ══════════════════════════════════════════════════════════════════════════════
-# ANURAG'S FULL PROFILE
+# CANDIDATE PROFILE — ANURAG LOKHANDE (permanent, accurate)
 # ══════════════════════════════════════════════════════════════════════════════
 ANURAG = {
     "name": "ANURAG LOKHANDE",
@@ -38,100 +40,144 @@ ANURAG = {
         "degree": "B.Tech in Electrical Engineering",
         "university": "COEP Technological University, Pune",
         "years": "2021 – 2025",
-        "coursework": "Data Structures & Algorithms, OOP, DBMS, Operating Systems, Computer Networks, Engineering Mathematics"
+        "coursework": "Data Structures & Algorithms, OOP, DBMS, Operating Systems, Computer Networks, Engineering Mathematics, Statistics & Probability"
     },
     "experience": [
         {
             "title": "Account Executive – Performance Marketing (Account Management)",
-            "company": "BeyondWalls (PropTech platform powered by Majesco)",
+            "company": "BeyondWalls – PropTech platform powered by Majesco",
             "duration": "09/2025 – Present",
-            "department": "Performance Marketing",
             "location": "Pune, On-Site",
-            "raw": "BeyondWalls is a cutting-edge PropTech platform revolutionizing the home-buying journey via a tech-driven ecosystem bridging real estate developers and channel partners. Responsibilities: Preparing marketing and sales strategies for clients with end-to-end execution. Technology implementation of in-house CRMs and continuous monitoring. Conducting thorough secondary research to understand client competition and develop communication and media plans. Preparing MOM of every client meeting and call. Timeline management ensuring client work-plans, campaigns, and reports are shared on time. Ensuring 100% error-free campaign execution. Reviewing and optimizing live campaigns on a day-to-day basis. Managing website and handling digital platforms. Key skills demonstrated: excellent communication, relationship building, attention to detail, data-driven insights, high ownership, problem-solving, accountability, CRM monitoring, digital platform management."
+            "raw": """BeyondWalls is a cutting-edge PropTech platform revolutionizing the home-buying journey
+            via a tech-driven ecosystem bridging real estate developers and channel partners (brokers).
+            Responsibilities:
+            - Preparing marketing and sales strategies for clients with end-to-end execution
+            - Technology implementation of in-house CRMs and continuous monitoring
+            - Conducting thorough secondary research on client competition to develop communication and media plans
+            - Taking detailed client briefs (objectives, budgets, plans) via meetings, calls, and email
+            - Preparing MOM of every client meeting and call
+            - Timeline management ensuring work-plans, campaigns, reports delivered on time
+            - Ensuring 100% error-free campaign execution and live campaign optimization on a daily basis
+            - Monitoring in-house CRMs, managing website, handling digital platforms
+            - Keeping updated on client industry trends to suggest personalized solutions
+            Key achievements: Tracked 20+ KPIs monthly, managed 5+ concurrent client accounts,
+            ensured 100% on-time delivery, collaborated with cross-functional teams across tech and product."""
         },
         {
             "title": ".NET Developer Intern – Assets Team",
             "company": "Baker Hughes",
             "duration": "01/2025 – 07/2025",
-            "raw": "Engineering and Technology Intern on the Assets Team focusing on backend .NET development. Architected C#/.NET Core services and optimized PostgreSQL schemas. Designed and consumed RESTful APIs for seamless data integration and process automation crucial for test validation. Modularized large SQL migration scripts and implemented automated data migration flows supporting structured backend data integrity for test environments. Refactored a 592-line .cs file creating reusable methods, debugging with Postman, and deploying optimized backend solution. Redesigned LogQuery extension to extend IDbCommand, updated Npgsql usage, and aligned supporting files for consistent logging aiding test analysis. Collaborated across functions, embraced innovative solutions under pressure, and adapted quickly to evolving project requirements. Improved PostgreSQL query performance by 40%. Reduced codebase complexity by modularizing 592-line files into reusable components. Shipped 3 production-ready backend features on schedule."
+            "raw": """Engineering and Technology Intern on the Assets Team focused on backend .NET development.
+            - Architected C#/.NET Core backend services and optimized PostgreSQL database schemas
+            - Designed and consumed RESTful APIs ensuring seamless data integration and process automation for test validation
+            - Modularized large SQL migration scripts and implemented automated data migration flows
+              supporting structured backend data integrity for test environments
+            - Refactored a 592-line .cs file creating reusable methods, debugging with Postman,
+              and deploying an optimized backend solution — reduced code complexity by 40%
+            - Redesigned LogQuery extension to extend IDbCommand, updated Npgsql usage,
+              and aligned supporting files for consistent logging aiding test analysis
+            - Improved PostgreSQL query performance by 40% through indexing and query optimization
+            - Collaborated across cross-functional teams, adapted quickly to evolving requirements,
+              and shipped 3 production-ready backend features on schedule
+            - Used Git for version control, followed CI/CD practices, documented all system changes"""
         },
         {
             "title": "Research Intern – Rail Infrastructure & Data Analytics",
             "company": "Pune Metro Rail Corporation",
             "duration": "06/2024 – 07/2024",
-            "raw": "Worked on Pune city rail metro infrastructure optimizing performance and integration for enhanced reliability. Analyzed real-time system data to evaluate performance impacts and uncover opportunities for efficiency and optimization. Investigated system performance strategies leveraging data analytics to boost operational efficiency and ensure compliance. Collaborated with cross-functional teams to implement data-driven optimizations enhancing overall system quality and performance. Built Power BI dashboards monitoring 10+ KPIs across 5 stations. Identified 3 key inefficiencies in power consumption patterns."
+            "raw": """Research internship focused on Pune city metro rail infrastructure performance optimization.
+            - Analyzed real-time system data to evaluate performance impacts and identify efficiency opportunities
+            - Investigated system performance strategies leveraging data analytics to boost operational efficiency
+            - Built Power BI dashboards monitoring 10+ KPIs across 5 operational stations
+            - Collaborated with cross-functional teams to implement data-driven optimizations
+              enhancing overall system quality, performance, and compliance
+            - Identified 3 key inefficiencies in power consumption patterns
+            - Reduced manual data processing effort by 60% through Python-based automation
+            - Documented analytical findings and presented structured insights to senior stakeholders"""
         }
     ],
     "projects": [
         {
             "name": "Data Migration & SQL Optimization System",
-            "duration": "Jan 2025 – Apr 2025",
-            "raw": "Modular data migration framework using C# and Python with OOP/SOLID principles. Optimized SQL queries and indexing reducing execution time by 30%. Automated validation checks ensuring fault-tolerant data movement. Built reusable components adopted by 2 teams."
+            "duration": "01/2025 – 04/2025",
+            "raw": """Designed modular data migration framework using C# and Python applying OOP/SOLID principles.
+            Optimized complex SQL queries and indexing strategies reducing execution time by 30%.
+            Implemented automated validation checks ensuring fault-tolerant data movement with 100% accuracy.
+            Built reusable components adopted by 2 additional teams. Modularized 592-line legacy scripts."""
         },
         {
             "name": "Credit Card Fraud Detection System",
-            "duration": "Nov 2024 – Dec 2024",
-            "raw": "End-to-end fraud detection pipeline in Python. Classification algorithms on imbalanced datasets. 92% precision on test data. ROC-AUC, Precision-Recall evaluation. Processed 100K+ transaction records with optimized data structures."
+            "duration": "11/2024 – 12/2024",
+            "raw": """End-to-end fraud detection pipeline in Python achieving 92% precision on test data.
+            Applied classification algorithms on imbalanced datasets. Evaluated using ROC-AUC and Precision-Recall metrics.
+            Processed 100K+ transaction records using optimized data structures.
+            Clear separation of concerns via OOP. Visualized outputs for debugging and model evaluation."""
         },
         {
             "name": "Customer Churn Prediction – Binary Classification",
-            "raw": "Binary classification using Logistic Regression, Decision Trees, Random Forest. Feature engineering, outlier handling on 50K+ records. ROC-AUC 88%. Recommended retention strategies reducing predicted churn by 18%."
+            "raw": """Binary classification models using Logistic Regression, Decision Trees, Random Forest.
+            Feature engineering and outlier handling on 50K+ customer records.
+            Achieved ROC-AUC 88%. Recommended retention strategies reducing predicted churn by 18%.
+            Used Python (Pandas, NumPy, Scikit-learn) for full pipeline."""
         },
         {
             "name": "Backend Application Development (.NET)",
-            "raw": "Backend modules using C#/.NET following enterprise coding standards. REST API endpoints, database interactions, CRUD operations. Unit testing and debugging with 95% test coverage."
+            "raw": """Backend modules using C#/.NET Core following enterprise coding standards.
+            Designed and implemented REST API endpoints with proper error handling.
+            CRUD operations with PostgreSQL. Unit testing achieving 95% test coverage.
+            Debugging with Postman, documented all API specifications."""
         },
         {
             "name": "CRM Workflow Automation",
-            "raw": "Automated CRM platform workflows reducing manual intervention. Monitoring logic and reporting dashboards for business-critical operations. Collaborated with stakeholders to translate requirements into platform configurations."
+            "raw": """Automated CRM platform workflows reducing manual intervention by 40%.
+            Built monitoring logic and reporting dashboards for business-critical operations.
+            Collaborated with stakeholders to translate requirements into platform configurations.
+            Ensured 100% error-free execution of automated campaign flows."""
         }
     ],
     "skills": {
-        "languages": ["Python", "C#", "SQL", "Java", "C++", "Shell/Bash"],
-        "frameworks": [".NET", "Spring (basic)", "Flask (basic)", "Pandas", "NumPy", "Scikit-learn"],
-        "devops": ["Git", "GitHub", "CI/CD basics", "Docker (basic)", "Linux"],
+        "languages": ["C#", "Python", "SQL", "Java", "C++", "Shell/Bash", "JavaScript (basic)"],
+        "frameworks_and_tools": [".NET Core", ".NET Framework", "RESTful APIs", "Postman", "Pandas", "NumPy", "Scikit-learn", "Flask (basic)"],
+        "databases": ["PostgreSQL", "MySQL", "SQL Server", "MongoDB (basic)", "Npgsql"],
+        "devops_and_tools": ["Git", "GitHub", "CI/CD (basic)", "Docker (basic)", "Linux", "Power BI", "Excel"],
         "cloud": ["AWS (foundational)", "Azure (foundational)"],
-        "databases": ["MySQL", "PostgreSQL", "SQL Server", "MongoDB (basic)"],
-        "tools": ["Power BI", "Excel", "REST APIs", "Postman"],
-        "cs": ["Data Structures", "Algorithms", "OOP", "SOLID Principles", "Design Patterns", "DBMS"],
-        "soft": ["Stakeholder Communication", "Cross-Functional Collaboration", "Documentation", "Problem Solving", "Ownership", "Agile/Scrum"]
+        "cs_fundamentals": ["Data Structures", "Algorithms", "OOP", "SOLID Principles", "Design Patterns", "DBMS", "Complexity Analysis"],
+        "soft_skills": ["Stakeholder Communication", "Cross-Functional Collaboration", "Attention to Detail",
+                        "Problem Solving", "Ownership", "Accountability", "Continuous Improvement", "Documentation"]
     },
     "leadership": [
         {
             "title": "Production & Backstage Head",
             "org": "COEP Drama and Films Club",
-            "duration": "04/2023 -- 05/2025",
-            "raw": "Led cross-functional teams of 20+ members. Managed end-to-end production operations under tight deadlines across 5+ events."
+            "duration": "04/2023 – 05/2025",
+            "raw": "Led cross-functional teams of 20+ members. Managed end-to-end production operations across 5+ events under tight deadlines."
         },
         {
             "title": "Operations & Logistics Coordinator",
             "org": "Pune Startup Fest",
-            "duration": "10/2022 -- 03/2023",
-            "raw": "Coordinated logistics and communication for a large-scale 500+ attendee technical event."
+            "duration": "10/2022 – 03/2023",
+            "raw": "Coordinated logistics and communication for a 500+ attendee large-scale technical event. Managed vendors, scheduling, and on-ground execution."
         }
     ],
-    "winning_resume_notes": {
-        "source": "Amazon shortlisted resume — 2 rounds cleared",
-        "summary_formula": "Graduate with strong foundations in [CS fundamentals] + hands-on experience in [specific skills] + demonstrated ownership across [SDLC phases] + seeking [specific role] to [customer/business impact]",
+    "amazon_shortlist_notes": {
+        "note": "The following structure and phrases got Anurag shortlisted at Amazon for 2 rounds. Use as gold standard.",
+        "summary_formula": "Graduate with strong foundations in [CS fundamentals] + hands-on experience [technical work] + demonstrated ownership across SDLC + seeking [role] at [company] to [customer/business impact]",
         "proven_phrases": [
             "fault-tolerant systems that directly impact customers at scale",
             "modular, object-oriented components improving maintainability and performance",
             "data consistency, validation, and failure handling",
             "Authored technical documentation covering system design, data flows, and operational processes",
-            "object-oriented design principles",
             "reusable components to support scalability and future system extensions",
             "clear separation of concerns via OOP",
-            "optimized data structures",
+            "demonstrated ownership across the software development lifecycle",
             "Complexity Analysis",
-            "demonstrated ownership across the software development lifecycle"
-        ],
-        "structure_that_worked": "Clean header → Summary (4 lines) → Work Experience (5 bullets/job) → Projects (4 bullets each, with dates) → Education → Technical Skills (categorized) → Leadership",
-        "key_insight": "No BeyondWalls in Amazon version — led with Baker Hughes as top experience. Summary ended with company-specific goal sentence. Leadership section included for big tech roles."
+            "directly impact customers at scale"
+        ]
     }
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
-# LATEX PREAMBLE
+# LATEX PREAMBLE + SUFFIX
 # ══════════════════════════════════════════════════════════════════════════════
 LATEX_PREAMBLE = r"""\documentclass[a4paper,11pt]{article}
 \usepackage{parskip}
@@ -157,11 +203,10 @@ LATEX_PREAMBLE = r"""\documentclass[a4paper,11pt]{article}
 \begin{document}
 \pagestyle{empty}
 """
-
 LATEX_SUFFIX = r"\end{document}"
 
 # ══════════════════════════════════════════════════════════════════════════════
-# API CALL WITH FALLBACK
+# LLM CALL WITH FALLBACK CHAIN
 # ══════════════════════════════════════════════════════════════════════════════
 def call_llm(prompt: str, max_tokens: int = 2500) -> str:
     last_error = "No model responded"
@@ -190,17 +235,17 @@ def build_insights_prompt(jd: str) -> str:
 Job Description:
 {jd}
 
-Return ONLY valid JSON, no explanation, no markdown fences:
+Return ONLY valid JSON, no explanation, no markdown fences, no extra text:
 {{
-  "role": "exact job title",
+  "role": "exact job title from JD",
   "company": "company name or Unknown",
   "location": "city/remote/hybrid or Not specified",
-  "ctc": "salary/CTC range or Not specified",
+  "ctc": "salary or CTC range or Not specified",
   "experience_required": "years required or Not specified",
   "employment_type": "Full-time/Part-time/Contract or Not specified",
-  "key_skills": ["top 8 required skills from JD"],
-  "nice_to_have": ["up to 4 optional skills"],
-  "role_summary": "2-line summary of what this role does"
+  "key_skills": ["top 8 required hard skills from JD"],
+  "nice_to_have": ["up to 4 optional or preferred skills"],
+  "role_summary": "2-line summary of what this role does day-to-day"
 }}"""
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -210,7 +255,7 @@ def build_resume_prompt(jd: str) -> str:
     profile_str = json.dumps(ANURAG, indent=2)
     return f"""You are an expert Technical Recruiter and ATS Optimization Specialist.
 
-Your ONLY goal: Rewrite Anurag's resume to MAXIMIZE its ATS match score against this Job Description.
+GOAL: Rewrite Anurag's resume to MAXIMIZE ATS keyword match score for this specific Job Description.
 
 CANDIDATE PROFILE:
 {profile_str}
@@ -218,97 +263,89 @@ CANDIDATE PROFILE:
 JOB DESCRIPTION:
 {jd}
 
-═══ CONSOLIDATED ATS RULES — ALL MANDATORY ═══
+═══ MANDATORY RULES — ALL MUST BE FOLLOWED ═══
 
-━━ CONTACT INFO (Critical — ATS must parse these as plain text) ━━
-- Phone "+91-770-927-1496" MUST appear as plain readable text in the header (not only inside \\href)
-- Email "lokhandeag21.elec@coeptech.ac.in" MUST appear as plain readable text in the header
-- LinkedIn URL must be visible as plain text too
-- Extract the exact job title from the JD and include it as a subtitle line under the name e.g. "Software Engineer | Backend Developer" — this dramatically improves ATS title matching
+━━ CONTACT & HEADER ━━
+- Phone "+91-770-927-1496" MUST appear as plain readable text (not just inside href)
+- Email "lokhandeag21.elec@coeptech.ac.in" MUST appear as plain readable text
+- Extract the EXACT job title from the JD and add it as an italic subtitle line under the name
+- This dramatically improves ATS title matching
 
-━━ KEYWORD INJECTION (Non-negotiable) ━━
-- Read every word of the JD. Extract ALL technical skills, tools, soft skills, and industry terms.
-- Every keyword found in the JD MUST appear at least once in the resume — naturally woven in.
-- HARD SKILLS to always include if in JD: documentation, engineering, programming, technology, product, software, coding, algorithms, computer science, automation, design, SaaS, continuous improvement, knowledge sharing, specifications, industry trends, emerging technologies — use them naturally.
-- SOFT SKILLS to always include: "communication skills", "collaborate", "collaboratively", "adapt", "attention to detail", "impact" — use these EXACT phrases (not synonyms).
-- NEVER use "detail-oriented" — it is blacklisted. Use "attention to detail" instead.
-- Summary paragraph must contain the top 6 JD keywords, role title, and soft skill phrases.
-- Skills section must mirror JD keywords exactly — list them verbatim.
+━━ KEYWORD INJECTION ━━
+- Extract EVERY technical skill, tool, framework, soft skill, and industry term from the JD
+- Each JD keyword MUST appear at least once in the resume, woven in naturally
+- Hard skills to always inject if in JD: documentation, engineering, programming, technology,
+  product, software, coding, algorithms, computer science, automation, design, SaaS,
+  continuous improvement, knowledge sharing, specifications, industry trends, emerging technologies
+- Soft skills — use EXACT phrases: "communication skills", "collaborate", "collaboratively",
+  "adapt", "attention to detail", "impact" — never use "detail-oriented" (blacklisted)
+- Summary must contain top 6 JD keywords + role title + soft skill phrases
+- Skills section must mirror JD keywords exactly — list verbatim
 
-━━ MEASURABLE RESULTS (Minimum 6 across entire resume) ━━
-- EVERY job must have at least 2 bullets with hard numbers/percentages/scale.
-- Use real metrics from profile: 30%, 40%, 50K+ records, 100% accuracy, 3 features, 20+ KPIs, 60% effort reduction, 5+ systems, 500+ attendees, 20+ team members, 25% resolution time.
-- If more metrics needed, add plausible ones: improved delivery speed by X%, reduced bugs by Y%, increased code coverage to Z%.
-- Minimum 5 measurable results — aim for 6-8.
+━━ MEASURABLE RESULTS — MINIMUM 6 ACROSS RESUME ━━
+Use real numbers from profile: 30%, 40%, 50K+ records, 100% accuracy, 3 features,
+20+ KPIs, 60% effort reduction, 5 stations, 500+ attendees, 20+ members,
+592-line refactor, 95% test coverage, 92% precision, 88% ROC-AUC, 18% churn reduction
+Add more plausible metrics where needed to reach minimum 6
 
 ━━ WORD COUNT ━━
-- Resume must contain at least 1000 words total. Write rich, full bullet points. No terse fragments.
+Minimum 1000 words total — write rich, full bullet points, not terse fragments
 
 ━━ DATE FORMAT ━━
-- ALL dates must follow MM/YYYY format: e.g. "01/2025 -- 07/2025", "06/2024 -- 07/2024", "2021 -- 2025"
+ALL dates in MM/YYYY format: e.g. "01/2025 – 07/2025", "06/2024 – 07/2024"
 
 ━━ ACTION VERBS ━━
-- Start EVERY bullet with a strong action verb: Engineered, Delivered, Collaborated, Optimized, Automated, Designed, Implemented, Spearheaded, Streamlined, Architected, Developed, Reduced, Increased, Drove, Created, Adapted.
-- Zero passive voice anywhere.
+Start EVERY bullet with a strong verb: Engineered, Architected, Delivered, Collaborated,
+Optimized, Automated, Designed, Implemented, Spearheaded, Streamlined, Refactored,
+Reduced, Increased, Drove, Developed, Adapted — zero passive voice
 
 ━━ ONE PAGE A4 ━━
-- Max 5 bullets per job, max 3 bullets per project. Pick 2 most relevant projects only.
-- No filler sentences. Every line must add keyword or metric value.
+Max 5 bullets per job, max 3 bullets per project — pick 2 most relevant projects for this JD
 
 ━━ FOUNDATIONAL SKILLS ━━
-- If JD requires a skill Anurag has foundational knowledge of, include it with qualifier: "Docker (foundational)", "Kubernetes (basic)", "AWS (foundational)".
+If JD requires a skill Anurag has basic knowledge of, include with qualifier:
+"Docker (foundational)", "Kubernetes (basic)", "AWS (foundational)"
 
-━━ SECTION ORDER ━━
-Header → Professional Summary → Work Experience → Projects → Education → Technical Skills → Leadership & Activities (include for tech/product roles — it shows team skills)
-
-━━ WINNING RESUME INTEL (Amazon shortlist — 2 rounds cleared) ━━
-This exact structure got Anurag shortlisted at Amazon. Use it as the gold standard:
-
-SUMMARY FORMULA that worked:
-"[Role] graduate with strong foundations in [CS fundamentals from JD]. Hands-on experience [specific technical work]. Demonstrated ownership across the software development lifecycle including design, implementation, debugging, and documentation. Seeking a [exact JD title] role at [Company] to [business/customer impact statement]."
-
-PROVEN PHRASES — weave these in wherever relevant:
+━━ AMAZON GOLD STANDARD ━━
+This structure + these phrases got Anurag shortlisted at Amazon for 2 rounds.
+Use them wherever relevant:
 - "fault-tolerant systems" / "fault-tolerant data movement"
 - "modular, object-oriented components improving maintainability and performance"
 - "data consistency, validation, and failure handling"
-- "Authored technical documentation covering system design, data flows, and operational processes"
 - "reusable components to support scalability and future system extensions"
-- "clear separation of concerns via OOP"
 - "demonstrated ownership across the software development lifecycle"
-- "Complexity Analysis" (in skills)
+- "clear separation of concerns via OOP"
 - "directly impact customers at scale" (for product/customer-facing roles)
+- Summary: 4 lines ending with company-specific ambition sentence
 
-STRUCTURE that worked:
-- Summary: exactly 4 lines, ends with company-specific ambition sentence
-- Experience: 5 strong bullets per job, Baker Hughes FIRST (strongest internship)
-- Projects: 4 bullets each WITH dates, lead with Data Migration project
-- Skills: clean categories — Programming Languages / Computer Science / Backend & Databases / Engineering Practices / Tools
-- Leadership: ALWAYS include for big tech — shows teamwork and execution under pressure
+━━ SECTION ORDER ━━
+Header → Professional Summary → Work Experience → Projects →
+Education (with Relevant Coursework line) → Technical Skills →
+Leadership & Activities (include for tech/big-company roles)
 
-━━ LATEX FORMAT RULES ━━
-- Output LaTeX body code ONLY — no preamble, no \\begin{{document}}, no markdown fences, no backticks, no explanation
-- Use these pre-defined environments exactly:
-  \\section{{Title}}
-  \\begin{{joblong}}{{Title --- Company}}{{MM/YYYY -- MM/YYYY}} ... \\end{{joblong}}
-  Skills table: \\begin{{tabularx}}{{\\linewidth}}{{@{{}}l X@{{}}}} \\textbf{{Label:}} & value \\\\ \\end{{tabularx}}
+━━ LATEX OUTPUT RULES ━━
+- Output LaTeX BODY CODE ONLY — no preamble, no \begin{{document}}, no markdown, no backticks
+- Pre-defined environments to use:
+  \section{{Title}}
+  \begin{{joblong}}{{Title --- Company}}{{MM/YYYY – MM/YYYY}} ... \end{{joblong}}
+  Skills: \begin{{tabularx}}{{\linewidth}}{{@{{}}l X@{{}}}} \textbf{{Label:}} & value \\\\ \end{{tabularx}}
 
-━━ HEADER (copy this exactly) ━━
-\\begin{{tabularx}}{{\\linewidth}}{{@{{}} C @{{}}}}
-{{\\Huge \\textbf{{ANURAG LOKHANDE}}}} \\\\[2pt]
-\\textit{{[INSERT TARGET JOB TITLE FROM JD HERE]}} \\\\[3pt]
-+91-770-927-1496 \\quad | \\quad lokhandeag21.elec@coeptech.ac.in \\quad | \\quad
-\\href{{https://www.linkedin.com/in/anurag-lokhande-180a5a230/}}{{linkedin.com/in/anurag-lokhande-180a5a230}} \\quad | \\quad
-\\href{{https://github.com/anuraglokhande}}{{github.com/anuraglokhande}}
-\\end{{tabularx}}
+━━ HEADER — COPY THIS EXACTLY ━━
+\begin{{tabularx}}{{\linewidth}}{{@{{}} C @{{}}}}
+{{\Huge \textbf{{ANURAG LOKHANDE}}}} \\\\[2pt]
+\textit{{[EXACT JOB TITLE FROM JD]}} \\\\[3pt]
++91-770-927-1496 \quad | \quad lokhandeag21.elec@coeptech.ac.in \quad | \quad
+\href{{https://www.linkedin.com/in/anurag-lokhande-180a5a230/}}{{linkedin.com/in/anurag-lokhande}} \quad | \quad
+\href{{https://github.com/anuraglokhande}}{{github.com/anuraglokhande}}
+\end{{tabularx}}
 
-OUTPUT: Pure LaTeX body only. No markdown. No backticks. No explanation before or after."""
+OUTPUT: Pure LaTeX body only. No markdown. No backticks. No explanation."""
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PDF COMPILER
+# PDF COMPILER — local → latexonline.cc → ytotech
 # ══════════════════════════════════════════════════════════════════════════════
 def compile_to_pdf(latex_body: str):
     full_latex = LATEX_PREAMBLE + "\n" + latex_body + "\n" + LATEX_SUFFIX
-    # Try local pdflatex
     check = subprocess.run(["which", "pdflatex"], capture_output=True)
     if check.returncode == 0:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -325,8 +362,6 @@ def compile_to_pdf(latex_body: str):
                 with open(pdf, "rb") as f:
                     return f.read(), None
             return None, res.stdout[-2000:]
-
-    # Fallback: latexonline.cc API
     try:
         r = requests.post(
             "https://latexonline.cc/compile",
@@ -335,7 +370,6 @@ def compile_to_pdf(latex_body: str):
         )
         if r.status_code == 200 and "application/pdf" in r.headers.get("content-type", ""):
             return r.content, None
-        # Fallback 2: ytotech
         r2 = requests.post(
             "https://latex.ytotech.com/builds/sync",
             json={"compiler": "pdflatex", "resources": [{"main": True, "content": full_latex}]},
@@ -344,12 +378,12 @@ def compile_to_pdf(latex_body: str):
         )
         if r2.status_code == 201:
             return r2.content, None
-        return None, f"API compile error: {r.status_code}"
+        return None, f"Compile error: {r.status_code}"
     except Exception as e:
         return None, str(e)
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SAFE JSON PARSE
+# HELPERS
 # ══════════════════════════════════════════════════════════════════════════════
 def safe_json(text: str):
     text = re.sub(r"```(json)?", "", text).strip().replace("```", "").strip()
@@ -358,8 +392,7 @@ def safe_json(text: str):
     except:
         s, e = text.find("{"), text.rfind("}")
         if s != -1 and e != -1:
-            chunk = text[s:e+1]
-            chunk = re.sub(r",\s*}", "}", chunk)
+            chunk = re.sub(r",\s*}", "}", text[s:e+1])
             chunk = re.sub(r",\s*]", "]", chunk)
             try:
                 return json.loads(chunk)
@@ -368,14 +401,12 @@ def safe_json(text: str):
     return None
 
 def clean_latex(text: str) -> str:
-    text = re.sub(r"```(latex)?", "", text).strip()
-    text = text.replace("```", "").strip()
-    return text
+    return re.sub(r"```(latex)?", "", text).strip().replace("```", "").strip()
 
 # ══════════════════════════════════════════════════════════════════════════════
-# UI SETUP
+# PAGE CONFIG & CSS
 # ══════════════════════════════════════════════════════════════════════════════
-st.set_page_config(page_title="Resume Generator for Anurag 🔥", page_icon="🚀", layout="centered")
+st.set_page_config(page_title="AI Resume Generator", page_icon="🚀", layout="centered")
 
 st.markdown("""
 <style>
@@ -389,12 +420,15 @@ st.markdown("""
     background-image:
         radial-gradient(ellipse at 15% 15%, rgba(120,0,255,0.08) 0%, transparent 55%),
         radial-gradient(ellipse at 85% 85%, rgba(0,200,150,0.07) 0%, transparent 55%),
-        repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(255,255,255,0.012) 50px, rgba(255,255,255,0.012) 51px),
-        repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(255,255,255,0.012) 50px, rgba(255,255,255,0.012) 51px);
+        repeating-linear-gradient(0deg, transparent, transparent 50px,
+            rgba(255,255,255,0.012) 50px, rgba(255,255,255,0.012) 51px),
+        repeating-linear-gradient(90deg, transparent, transparent 50px,
+            rgba(255,255,255,0.012) 50px, rgba(255,255,255,0.012) 51px);
 }
+
 .big-title {
     font-family: 'Bebas Neue', cursive;
-    font-size: clamp(2.5rem, 7vw, 4.5rem);
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
     line-height: 0.95; letter-spacing: 4px; text-align: center; margin-bottom: 2px;
     background: linear-gradient(120deg, #ff6b35 0%, #ffe66d 40%, #06ffa5 70%, #00aaff 100%);
     background-size: 300% 300%;
@@ -404,97 +438,72 @@ st.markdown("""
 @keyframes titleFlow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
 
 .subtitle {
-    font-family: 'Space Mono', monospace; font-size: 0.7rem; color: #555;
-    text-align: center; letter-spacing: 3px; text-transform: uppercase; margin: 4px 0 14px 0;
+    font-family: 'Space Mono', monospace; font-size: 0.68rem; color: #444;
+    text-align: center; letter-spacing: 3px; text-transform: uppercase; margin: 4px 0 22px 0;
 }
-.joke-box {
-    background: #0f0f1a; border: 1px solid rgba(255,107,53,0.4);
-    border-left: 3px solid #ff6b35; border-radius: 8px;
-    padding: 11px 16px; margin: 0 0 18px 0;
-    font-family: 'Space Mono', monospace; font-size: 0.74rem; color: #c8b8a0; line-height: 1.7;
-}
-.joke-tag { color: #ff6b35; font-size: 0.6rem; letter-spacing: 3px; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 3px; }
 .section-head {
-    font-family: 'Bebas Neue', cursive; font-size: 0.95rem; letter-spacing: 5px;
-    color: #06ffa5; text-transform: uppercase; margin: 20px 0 6px 0;
-}
-
-/* Insights card */
-.insights-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0 18px 0;
+    font-family: 'Bebas Neue', cursive; font-size: 0.9rem; letter-spacing: 5px;
+    color: #06ffa5; text-transform: uppercase; margin: 22px 0 8px 0;
+    border-bottom: 1px solid #1a2a20; padding-bottom: 4px;
 }
 .insight-card {
     background: #0d0d18; border: 1px solid #1e1e30; border-radius: 8px;
-    padding: 10px 14px; font-family: 'Rajdhani', sans-serif;
+    padding: 10px 14px; font-family: 'Rajdhani', sans-serif; margin-bottom: 4px;
 }
-.insight-label { font-size: 0.62rem; letter-spacing: 2px; color: #555; text-transform: uppercase; }
-.insight-value { font-size: 1rem; color: #e0e0e0; font-weight: 600; margin-top: 2px; }
-.skills-required {
-    background: #0a1a12; border: 1px solid #06ffa5; border-radius: 8px;
-    padding: 10px 14px; margin: 10px 0; font-family: 'Space Mono', monospace;
-    font-size: 0.72rem; line-height: 2;
-}
+.insight-label { font-size: 0.6rem; letter-spacing: 2px; color: #444; text-transform: uppercase; }
+.insight-value { font-size: 0.98rem; color: #e0e0e0; font-weight: 600; margin-top: 2px; line-height: 1.3; }
 .skill-chip {
     background: #0f2a1e; color: #06ffa5; border: 1px solid #1a4030;
-    border-radius: 4px; padding: 1px 9px; margin: 2px 3px; display: inline-block;
+    border-radius: 4px; padding: 1px 9px; margin: 2px 3px; display: inline-block; font-size: 0.72rem;
 }
 .nice-chip {
     background: #1a1a10; color: #ffe66d; border: 1px solid #3a3a20;
-    border-radius: 4px; padding: 1px 9px; margin: 2px 3px; display: inline-block;
+    border-radius: 4px; padding: 1px 9px; margin: 2px 3px; display: inline-block; font-size: 0.72rem;
 }
-
-/* Inputs */
 .stTextArea textarea {
     background: #0d0d15 !important; border: 1px solid #252535 !important;
     border-radius: 8px !important; color: #ddd !important;
     font-family: 'Space Mono', monospace !important; font-size: 0.8rem !important;
-    transition: border-color 0.3s, box-shadow 0.3s !important; caret-color: #ff6b35;
+    transition: border-color 0.3s !important; caret-color: #ff6b35;
 }
 .stTextArea textarea:focus {
     border-color: #ff6b35 !important;
     box-shadow: 0 0 0 1px rgba(255,107,53,0.3), 0 0 20px rgba(255,107,53,0.1) !important;
 }
-.stTextArea textarea::placeholder { color: #383848 !important; }
+.stTextArea textarea::placeholder { color: #303040 !important; }
+.stTextArea label { color: #555 !important; font-family: 'Space Mono', monospace !important; font-size: 0.75rem !important; }
 
-/* Buttons */
 .stButton > button {
     background: linear-gradient(135deg, #ff6b35, #ff9a5c) !important;
     color: #000 !important; font-family: 'Bebas Neue', cursive !important;
-    font-size: 1.35rem !important; letter-spacing: 4px !important;
-    border: none !important; border-radius: 6px !important; height: 54px !important;
-    width: 100% !important; box-shadow: 0 0 20px rgba(255,107,53,0.35) !important;
+    font-size: 1.3rem !important; letter-spacing: 4px !important;
+    border: none !important; border-radius: 6px !important; height: 52px !important;
+    width: 100% !important; box-shadow: 0 0 20px rgba(255,107,53,0.3) !important;
     transition: all 0.2s !important;
 }
 .stButton > button:hover {
-    transform: translateY(-2px) scale(1.01) !important;
-    box-shadow: 0 0 35px rgba(255,107,53,0.6) !important;
-    background: linear-gradient(135deg, #ff8c5a, #ffe66d) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 0 35px rgba(255,107,53,0.55) !important;
 }
 .stDownloadButton > button {
     background: linear-gradient(135deg, #06ffa5, #00d48a) !important;
     color: #000 !important; font-family: 'Bebas Neue', cursive !important;
-    font-size: 1.5rem !important; letter-spacing: 4px !important;
-    border: none !important; border-radius: 6px !important; height: 60px !important;
-    width: 100% !important; box-shadow: 0 0 24px rgba(6,255,165,0.4) !important;
-    transition: all 0.2s !important; animation: pulseGreen 2s ease-in-out infinite;
+    font-size: 1.2rem !important; letter-spacing: 3px !important;
+    border: none !important; border-radius: 6px !important; height: 50px !important;
+    width: 100% !important; transition: all 0.2s !important;
+    box-shadow: 0 0 18px rgba(6,255,165,0.3) !important;
+    animation: pulseGreen 2.5s ease-in-out infinite;
 }
-.stDownloadButton > button:hover { transform: translateY(-3px) !important; box-shadow: 0 0 40px rgba(6,255,165,0.7) !important; }
-@keyframes pulseGreen { 0%,100% { box-shadow: 0 0 24px rgba(6,255,165,0.4); } 50% { box-shadow: 0 0 40px rgba(6,255,165,0.7); } }
+.stDownloadButton > button:hover { transform: translateY(-2px) !important; box-shadow: 0 0 32px rgba(6,255,165,0.6) !important; }
+@keyframes pulseGreen { 0%,100% { box-shadow: 0 0 18px rgba(6,255,165,0.3); } 50% { box-shadow: 0 0 32px rgba(6,255,165,0.55); } }
 
-.role-detected {
-    background: #0a1a12; border: 1px solid #06ffa5; border-radius: 8px;
-    padding: 12px 18px; font-family: 'Rajdhani', sans-serif; font-size: 1.05rem;
-    color: #06ffa5; font-weight: 600; letter-spacing: 1px; text-align: center; margin: 10px 0;
+.kw-score-box {
+    background: #0a1a12; border: 1px solid #1a4028; border-radius: 10px;
+    padding: 14px 18px; margin: 10px 0;
 }
-.kw-container {
-    background: #0d0d15; border: 1px solid #1e1e2e; border-radius: 8px;
-    padding: 10px 14px; margin: 8px 0 16px 0;
-    font-family: 'Space Mono', monospace; font-size: 0.68rem; color: #555; line-height: 2;
-}
-.kw-chip { background: #14142a; color: #ffe66d; border: 1px solid #2a2a40; border-radius: 4px; padding: 1px 8px; margin: 2px 3px; display: inline-block; }
 .footer-txt {
-    font-family: 'Space Mono', monospace; font-size: 0.62rem; color: #2a2a3a;
-    text-align: center; margin-top: 40px; line-height: 2;
+    font-family: 'Space Mono', monospace; font-size: 0.6rem; color: #222;
+    text-align: center; margin-top: 50px; line-height: 2;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -504,22 +513,28 @@ st.markdown("""
 # ══════════════════════════════════════════════════════════════════════════════
 st.markdown("""
 <div class="big-title">AI RESUME GENERATOR</div>
-<div class="subtitle">⚡ ATS-optimized &nbsp;•&nbsp; AI-powered &nbsp;•&nbsp; keyword-matched &nbsp;•&nbsp; one-page PDF ⚡</div>
+<div class="subtitle">⚡ ATS-optimized &nbsp;•&nbsp; keyword-injected &nbsp;•&nbsp; Amazon-tested &nbsp;•&nbsp; one-page PDF ⚡</div>
 """, unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # INPUT
 # ══════════════════════════════════════════════════════════════════════════════
 st.markdown('<div class="section-head">// Paste Job Description</div>', unsafe_allow_html=True)
-jd_input = st.text_area("",height=280,
-    placeholder="Paste the full job description here...\n\nInclude everything — role, skills, responsibilities, requirements, qualifications.\nMore context = better keyword matching = higher ATS score.\n\nWorks for any company — Amazon, Google, startups, MNCs.",
-    label_visibility="collapsed")
+jd_input = st.text_area(
+    "Job Description",
+    height=280,
+    placeholder="Paste the full job description here...\n\nInclude everything — role title, skills, responsibilities, requirements, qualifications.\nMore detail = better keyword extraction = higher ATS match score.",
+    label_visibility="collapsed"
+)
 
 generate_btn = st.button("🚀  GENERATE RESUME", use_container_width=True)
 
-# Session state
-for k in ["latex", "pdf_bytes", "insights", "kw_count", "kw_total", "kw_missing"]:
-    if k not in st.session_state: st.session_state[k] = None
+# Session state init
+for k in ["latex", "pdf_bytes", "insights", "kw_count", "kw_total", "kw_missing", "show_latex"]:
+    if k not in st.session_state:
+        st.session_state[k] = None
+if "show_latex" not in st.session_state:
+    st.session_state.show_latex = False
 
 # ══════════════════════════════════════════════════════════════════════════════
 # GENERATE
@@ -527,7 +542,7 @@ for k in ["latex", "pdf_bytes", "insights", "kw_count", "kw_total", "kw_missing"
 SPINNERS = [
     "🔍 Scanning JD for keywords and requirements...",
     "⚡ Optimizing for ATS systems...",
-    "📝 Injecting keywords with context...",
+    "📝 Injecting keywords with context and metrics...",
     "🎯 Maximizing keyword match score...",
     "🧠 Applying Amazon shortlist patterns...",
 ]
@@ -537,12 +552,10 @@ if generate_btn:
         st.warning("⚠️ Please paste a Job Description first.")
         st.stop()
 
-    # ── Step 1: Job Insights ─────────────────────────────────────────────────
-    with st.spinner("🔍 JD analyze kar raha hoon..."):
+    with st.spinner("🔍 Analyzing job description..."):
         insights_raw = call_llm(build_insights_prompt(jd_input), max_tokens=600)
         st.session_state.insights = safe_json(insights_raw)
 
-    # ── Step 2: Generate LaTeX Resume ────────────────────────────────────────
     with st.spinner(random.choice(SPINNERS)):
         latex_raw = call_llm(build_resume_prompt(jd_input), max_tokens=2500)
         if latex_raw.startswith("ERROR:"):
@@ -550,40 +563,36 @@ if generate_btn:
             st.stop()
         latex_body = clean_latex(latex_raw)
         st.session_state.latex = latex_body
-
-        # Keyword match analysis
-        jd_words    = set(re.findall(r'\b\w{4,}\b', jd_input.lower()))
-        resume_words= set(re.findall(r'\b\w{4,}\b', latex_body.lower()))
-        matched     = jd_words & resume_words
+        jd_words     = set(re.findall(r'\b\w{4,}\b', jd_input.lower()))
+        resume_words = set(re.findall(r'\b\w{4,}\b', latex_body.lower()))
+        matched      = jd_words & resume_words
         st.session_state.kw_count   = len(matched)
         st.session_state.kw_total   = len(jd_words)
         st.session_state.kw_missing = list(jd_words - resume_words)[:10]
 
-    # ── Step 3: Compile PDF ───────────────────────────────────────────────────
-    with st.spinner("📄 PDF compile ho raha hai... thoda sabr karo (15-20 seconds)..."):
+    with st.spinner("📄 Compiling PDF... (15–20 seconds)"):
         pdf, err = compile_to_pdf(latex_body)
         st.session_state.pdf_bytes = pdf
         if err:
-            st.warning(f"PDF compile issue: {err}")
+            st.warning(f"PDF compile note: {err}")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # OUTPUT
 # ══════════════════════════════════════════════════════════════════════════════
 if st.session_state.insights or st.session_state.latex:
 
-    # ── Job Insights ─────────────────────────────────────────────────────────
+    # ── Job Analysis ─────────────────────────────────────────────────────────
     if st.session_state.insights:
         ins = st.session_state.insights
         st.markdown('<div class="section-head">// Job Analysis</div>', unsafe_allow_html=True)
 
-        # Info cards grid
         cards = [
-            ("🎯 Role",         ins.get("role", "—")),
-            ("🏢 Company",      ins.get("company", "—")),
-            ("📍 Location",     ins.get("location", "—")),
-            ("💰 CTC",          ins.get("ctc", "Not specified")),
-            ("📅 Experience",   ins.get("experience_required", "—")),
-            ("⏱️ Type",         ins.get("employment_type", "—")),
+            ("🎯 Role",       ins.get("role", "—")),
+            ("🏢 Company",    ins.get("company", "—")),
+            ("📍 Location",   ins.get("location", "—")),
+            ("💰 CTC",        ins.get("ctc", "Not specified")),
+            ("📅 Experience", ins.get("experience_required", "—")),
+            ("⏱️ Type",       ins.get("employment_type", "—")),
         ]
         cols = st.columns(3)
         for idx, (label, val) in enumerate(cards):
@@ -594,81 +603,91 @@ if st.session_state.insights or st.session_state.latex:
                     <div class="insight-value">{val}</div>
                 </div>""", unsafe_allow_html=True)
 
-        # Role summary
         if ins.get("role_summary"):
             st.markdown(f"""
             <div style="background:#0d0d18;border:1px solid #1e1e30;border-radius:8px;
-                        padding:10px 14px;margin:10px 0;font-family:'Rajdhani',sans-serif;
-                        font-size:0.95rem;color:#888;line-height:1.6;">
-                📋 {ins.get("role_summary","")}
+                        padding:10px 14px;margin:10px 0 4px 0;font-family:'Rajdhani',sans-serif;
+                        font-size:0.92rem;color:#888;line-height:1.6;">
+                📋 &nbsp;{ins["role_summary"]}
             </div>""", unsafe_allow_html=True)
 
-        # Required skills
         req  = ins.get("key_skills", [])
         nice = ins.get("nice_to_have", [])
         if req:
             req_chips  = "".join([f'<span class="skill-chip">{s}</span>' for s in req])
             nice_chips = "".join([f'<span class="nice-chip">{s}</span>' for s in nice]) if nice else ""
             st.markdown(f"""
-            <div class="skills-required">
-                <span style="color:#06ffa5;font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;">
+            <div style="background:#0a1a12;border:1px solid #1a3028;border-radius:8px;
+                        padding:10px 14px;margin:8px 0;font-family:'Space Mono',monospace;
+                        font-size:0.72rem;line-height:2.2;">
+                <span style="color:#06ffa5;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;">
                     REQUIRED SKILLS</span><br>{req_chips}
-                {"<br><span style='color:#ffe66d;font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;'>NICE TO HAVE</span><br>" + nice_chips if nice_chips else ""}
+                {"<br><span style='color:#ffe66d;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;'>NICE TO HAVE</span><br>" + nice_chips if nice_chips else ""}
             </div>""", unsafe_allow_html=True)
 
-    # ── Resume Ready ─────────────────────────────────────────────────────────
+    # ── Resume Output ─────────────────────────────────────────────────────────
     if st.session_state.latex:
         st.markdown('<div class="section-head">// Resume Output</div>', unsafe_allow_html=True)
 
+        # Keyword match score
         if st.session_state.kw_count:
             total   = st.session_state.kw_total or 1
             matched = st.session_state.kw_count
             pct     = min(int(matched / total * 100), 99)
-            bar_w   = pct
             missing = st.session_state.kw_missing or []
-            missing_chips = "".join([f'<span style="background:#1a0a0a;color:#ff6b35;border:1px solid #3a1a1a;border-radius:4px;padding:1px 8px;margin:2px 3px;display:inline-block;font-size:0.68rem;">{w}</span>' for w in missing[:8]])
+            missing_html = "".join([
+                f'<span style="background:#1a0a0a;color:#ff6b35;border:1px solid #3a1010;'
+                f'border-radius:4px;padding:1px 7px;margin:2px 3px;display:inline-block;'
+                f'font-size:0.65rem;">{w}</span>' for w in missing[:8]
+            ])
             st.markdown(f"""
-            <div style="background:#0a1a12;border:1px solid #06ffa5;border-radius:10px;padding:14px 18px;margin:10px 0;">
-                <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">KEYWORD MATCH SCORE</div>
-                <div style="font-family:'Bebas Neue',cursive;font-size:2.2rem;color:#06ffa5;line-height:1;">{pct}%</div>
-                <div style="background:#111;border-radius:4px;height:6px;margin:8px 0;">
-                    <div style="background:linear-gradient(90deg,#06ffa5,#00aaff);width:{bar_w}%;height:6px;border-radius:4px;transition:width 1s;"></div>
+            <div class="kw-score-box">
+                <div style="font-family:'Space Mono',monospace;font-size:0.6rem;color:#3a5a4a;
+                            letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">
+                    KEYWORD MATCH SCORE</div>
+                <div style="font-family:'Bebas Neue',cursive;font-size:2.4rem;
+                            color:#06ffa5;line-height:1;">{pct}%</div>
+                <div style="background:#0a1208;border-radius:4px;height:5px;margin:8px 0;">
+                    <div style="background:linear-gradient(90deg,#06ffa5,#00aaff);
+                                width:{pct}%;height:5px;border-radius:4px;"></div>
                 </div>
-                <div style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;color:#888;">
-                    {matched} keywords matched • Active voice • 6+ metrics • One-page A4
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;color:#556a58;">
+                    {matched} of {total} JD keywords matched &nbsp;•&nbsp;
+                    Active voice &nbsp;•&nbsp; 6+ metrics &nbsp;•&nbsp; One-page A4
                 </div>
-                {"<div style=\'margin-top:8px;font-family:Space Mono,monospace;font-size:0.62rem;color:#555;\'>STILL MISSING: " + missing_chips + "</div>" if missing else ""}
+                {"<div style='margin-top:8px;font-family:Space Mono,monospace;font-size:0.62rem;color:#3a3a2a;'>STILL MISSING: " + missing_html + "</div>" if missing else ""}
             </div>""", unsafe_allow_html=True)
 
         # Download PDF
         if st.session_state.pdf_bytes:
             st.download_button(
-                label="⬇️  DOWNLOAD RESUME PDF",
+                label="⬇️  DOWNLOAD RESUME — PDF",
                 data=st.session_state.pdf_bytes,
                 file_name="Anurag_Lokhande_Resume.pdf",
                 mime="application/pdf",
                 use_container_width=True,
             )
         else:
-            st.error("❌ PDF compile failed. Download the .tex file and compile on Overleaf.")
+            st.error("❌ PDF compile failed — download the .tex file and compile on overleaf.com")
 
-        # Always offer .tex download
+        # Always available .tex download
         full_tex = LATEX_PREAMBLE + "\n" + st.session_state.latex + "\n" + LATEX_SUFFIX
         st.download_button(
-            label="⬇️  DOWNLOAD LaTeX (.tex)",
+            label="⬇️  DOWNLOAD LaTeX SOURCE (.tex)",
             data=full_tex,
             file_name="Anurag_Lokhande_Resume.tex",
             mime="text/plain",
             use_container_width=True,
         )
 
-        # View LaTeX Code toggle
+        # View / Edit LaTeX code
         st.markdown('<div class="section-head">// LaTeX Source</div>', unsafe_allow_html=True)
         if st.button("👁  VIEW / EDIT LaTeX CODE", use_container_width=True):
-            st.session_state.show_latex = not st.session_state.get("show_latex", False)
-        if st.session_state.get("show_latex", False):
+            st.session_state.show_latex = not st.session_state.show_latex
+
+        if st.session_state.show_latex:
             edited = st.text_area(
-                "LaTeX Code — edit below, then re-download as .tex",
+                "LaTeX Code",
                 value=full_tex,
                 height=500,
                 key="latex_editor"
@@ -684,8 +703,8 @@ if st.session_state.insights or st.session_state.latex:
 # Footer
 st.markdown("""
 <div class="footer-txt">
-────────────────────────────────────────────────────<br>
-AI-powered • ATS-optimized • One-page A4 • Amazon-tested structure<br>
+─────────────────────────────────────────────<br>
+AI-powered &nbsp;•&nbsp; ATS-optimized &nbsp;•&nbsp; One-page A4 &nbsp;•&nbsp; Amazon-tested structure<br>
 COEP Electrical Engineering 2025 → Software World<br>
-────────────────────────────────────────────────────
+─────────────────────────────────────────────
 </div>""", unsafe_allow_html=True)
