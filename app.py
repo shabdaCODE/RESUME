@@ -8,172 +8,105 @@ import tempfile
 import random
 
 # ══════════════════════════════════════════════════════════════════════════════
-# CONFIG
+# CONFIG — Google Gemini API (Free Tier)
 # ══════════════════════════════════════════════════════════════════════════════
-OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
-API_URL = "https://openrouter.ai/api/v1/chat/completions"
-HEADERS = {
-    "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-    "Content-Type": "application/json",
-    "HTTP-Referer": "https://streamlit.io",
-    "X-Title": "Resume Generator"
-}
-# Verified working free models on OpenRouter — tries each in order
-MODELS = [
-    "deepseek/deepseek-r1:free",          # confirmed free long-term
-    "deepseek/deepseek-chat:free",         # confirmed free long-term  
-    "meta-llama/llama-3.3-70b-instruct:free",
-    "mistralai/mistral-7b-instruct:free",
-    "openrouter/free",                     # auto-picks any available free model — never 404s
+GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+# Gemini free models in priority order
+GEMINI_MODELS = [
+    "gemini-2.0-flash",
+    "gemini-1.5-flash",
+    "gemini-1.5-flash-8b",
 ]
 
 # ══════════════════════════════════════════════════════════════════════════════
-# CANDIDATE PROFILE — ANURAG LOKHANDE (permanent, accurate)
+# CANDIDATE PROFILE — ANURAG LOKHANDE (sourced from actual resume PDF)
 # ══════════════════════════════════════════════════════════════════════════════
 ANURAG = {
     "name": "ANURAG LOKHANDE",
     "phone": "+91-770-927-1496",
     "email": "lokhandeag21.elec@coeptech.ac.in",
     "linkedin": "linkedin.com/in/anurag-lokhande-180a5a230",
-    "github": "github.com/anuraglokhande",
     "education": {
         "degree": "B.Tech in Electrical Engineering",
         "university": "COEP Technological University, Pune",
         "years": "2021 – 2025",
         "coursework": "Data Structures & Algorithms, OOP, DBMS, Operating Systems, Computer Networks, Engineering Mathematics, Statistics & Probability"
     },
+    "summary": (
+        "Software Engineering graduate with strong foundations in data structures, algorithms, "
+        "object-oriented programming, and relational databases. Hands-on experience designing backend "
+        "systems, optimizing SQL workflows, and building automation pipelines using Python, C++, C#, and SQL. "
+        "Demonstrated ownership across the software development lifecycle including design, implementation, "
+        "debugging, and documentation."
+    ),
     "experience": [
         {
-            "title": "Account Executive – Performance Marketing (Account Management)",
-            "company": "BeyondWalls – PropTech platform powered by Majesco",
-            "duration": "09/2025 – Present",
-            "location": "Pune, On-Site",
-            "raw": """BeyondWalls is a cutting-edge PropTech platform revolutionizing the home-buying journey
-            via a tech-driven ecosystem bridging real estate developers and channel partners (brokers).
-            Responsibilities:
-            - Preparing marketing and sales strategies for clients with end-to-end execution
-            - Technology implementation of in-house CRMs and continuous monitoring
-            - Conducting thorough secondary research on client competition to develop communication and media plans
-            - Taking detailed client briefs (objectives, budgets, plans) via meetings, calls, and email
-            - Preparing MOM of every client meeting and call
-            - Timeline management ensuring work-plans, campaigns, reports delivered on time
-            - Ensuring 100% error-free campaign execution and live campaign optimization on a daily basis
-            - Monitoring in-house CRMs, managing website, handling digital platforms
-            - Keeping updated on client industry trends to suggest personalized solutions
-            Key achievements: Tracked 20+ KPIs monthly, managed 5+ concurrent client accounts,
-            ensured 100% on-time delivery, collaborated with cross-functional teams across tech and product."""
-        },
-        {
-            "title": ".NET Developer Intern – Assets Team",
+            "title": "Software Engineering Intern",
             "company": "Baker Hughes",
             "duration": "01/2025 – 07/2025",
-            "raw": """Engineering and Technology Intern on the Assets Team focused on backend .NET development.
-            - Architected C#/.NET Core backend services and optimized PostgreSQL database schemas
-            - Designed and consumed RESTful APIs ensuring seamless data integration and process automation for test validation
-            - Modularized large SQL migration scripts and implemented automated data migration flows
-              supporting structured backend data integrity for test environments
-            - Refactored a 592-line .cs file creating reusable methods, debugging with Postman,
-              and deploying an optimized backend solution — reduced code complexity by 40%
-            - Redesigned LogQuery extension to extend IDbCommand, updated Npgsql usage,
-              and aligned supporting files for consistent logging aiding test analysis
-            - Improved PostgreSQL query performance by 40% through indexing and query optimization
-            - Collaborated across cross-functional teams, adapted quickly to evolving requirements,
-              and shipped 3 production-ready backend features on schedule
-            - Used Git for version control, followed CI/CD practices, documented all system changes"""
+            "bullets": [
+                "Designed and optimized backend data pipelines to process large datasets efficiently in a production environment.",
+                "Refactored legacy SQL and Python scripts into modular, object-oriented components, improving maintainability and performance.",
+                "Worked on data migration workflows with emphasis on data consistency, validation, and failure handling.",
+                "Debugged performance bottlenecks and collaborated with cross-functional teams to improve system reliability.",
+                "Authored technical documentation covering system design, data flows, and operational processes."
+            ]
         },
         {
-            "title": "Research Intern – Rail Infrastructure & Data Analytics",
+            "title": "Research Intern",
             "company": "Pune Metro Rail Corporation",
             "duration": "06/2024 – 07/2024",
-            "raw": """Research internship focused on Pune city metro rail infrastructure performance optimization.
-            - Analyzed real-time system data to evaluate performance impacts and identify efficiency opportunities
-            - Investigated system performance strategies leveraging data analytics to boost operational efficiency
-            - Built Power BI dashboards monitoring 10+ KPIs across 5 operational stations
-            - Collaborated with cross-functional teams to implement data-driven optimizations
-              enhancing overall system quality, performance, and compliance
-            - Identified 3 key inefficiencies in power consumption patterns
-            - Reduced manual data processing effort by 60% through Python-based automation
-            - Documented analytical findings and presented structured insights to senior stakeholders"""
+            "bullets": [
+                "Built data analysis and reporting solutions to monitor operational metrics across multiple metro stations.",
+                "Developed Python-based automation for data cleaning, transformation, and validation.",
+                "Performed exploratory analysis to identify trends, inefficiencies, and system-level patterns.",
+                "Presented technical insights to stakeholders using structured reports and dashboards."
+            ]
         }
     ],
     "projects": [
         {
             "name": "Data Migration & SQL Optimization System",
             "duration": "01/2025 – 04/2025",
-            "raw": """Designed modular data migration framework using C# and Python applying OOP/SOLID principles.
-            Optimized complex SQL queries and indexing strategies reducing execution time by 30%.
-            Implemented automated validation checks ensuring fault-tolerant data movement with 100% accuracy.
-            Built reusable components adopted by 2 additional teams. Modularized 592-line legacy scripts."""
+            "bullets": [
+                "Designed a modular data migration framework using C# and Python, applying object-oriented design principles.",
+                "Optimized complex SQL queries and indexing strategies, reducing execution time by 30%.",
+                "Implemented automated validation checks and error handling to ensure fault-tolerant data movement.",
+                "Built reusable components to support scalability and future system extensions."
+            ]
         },
         {
             "name": "Credit Card Fraud Detection System",
             "duration": "11/2024 – 12/2024",
-            "raw": """End-to-end fraud detection pipeline in Python achieving 92% precision on test data.
-            Applied classification algorithms on imbalanced datasets. Evaluated using ROC-AUC and Precision-Recall metrics.
-            Processed 100K+ transaction records using optimized data structures.
-            Clear separation of concerns via OOP. Visualized outputs for debugging and model evaluation."""
-        },
-        {
-            "name": "Customer Churn Prediction – Binary Classification",
-            "raw": """Binary classification models using Logistic Regression, Decision Trees, Random Forest.
-            Feature engineering and outlier handling on 50K+ customer records.
-            Achieved ROC-AUC 88%. Recommended retention strategies reducing predicted churn by 18%.
-            Used Python (Pandas, NumPy, Scikit-learn) for full pipeline."""
-        },
-        {
-            "name": "Backend Application Development (.NET)",
-            "raw": """Backend modules using C#/.NET Core following enterprise coding standards.
-            Designed and implemented REST API endpoints with proper error handling.
-            CRUD operations with PostgreSQL. Unit testing achieving 95% test coverage.
-            Debugging with Postman, documented all API specifications."""
-        },
-        {
-            "name": "CRM Workflow Automation",
-            "raw": """Automated CRM platform workflows reducing manual intervention by 40%.
-            Built monitoring logic and reporting dashboards for business-critical operations.
-            Collaborated with stakeholders to translate requirements into platform configurations.
-            Ensured 100% error-free execution of automated campaign flows."""
+            "bullets": [
+                "Built an end-to-end fraud detection pipeline using Python with clear separation of concerns via OOP.",
+                "Applied classification algorithms on imbalanced datasets and evaluated models using precision-recall metrics.",
+                "Processed large transaction datasets efficiently using optimized data structures.",
+                "Visualized system outputs to support debugging, monitoring, and model evaluation."
+            ]
         }
     ],
     "skills": {
-        "languages": ["C#", "Python", "SQL", "Java", "C++", "Shell/Bash", "JavaScript (basic)"],
-        "frameworks_and_tools": [".NET Core", ".NET Framework", "RESTful APIs", "Postman", "Pandas", "NumPy", "Scikit-learn", "Flask (basic)"],
-        "databases": ["PostgreSQL", "MySQL", "SQL Server", "MongoDB (basic)", "Npgsql"],
-        "devops_and_tools": ["Git", "GitHub", "CI/CD (basic)", "Docker (basic)", "Linux", "Power BI", "Excel"],
-        "cloud": ["AWS (foundational)", "Azure (foundational)"],
-        "cs_fundamentals": ["Data Structures", "Algorithms", "OOP", "SOLID Principles", "Design Patterns", "DBMS", "Complexity Analysis"],
-        "soft_skills": ["Stakeholder Communication", "Cross-Functional Collaboration", "Attention to Detail",
-                        "Problem Solving", "Ownership", "Accountability", "Continuous Improvement", "Documentation"]
+        "Programming Languages": ["Python", "C++", "C#", "Java", "SQL"],
+        "Computer Science": ["Data Structures", "Algorithms", "OOP", "Complexity Analysis"],
+        "Backend & Databases": ["MySQL", "Relational Databases", "Query Optimization", "PostgreSQL"],
+        "Engineering Practices": ["Debugging", "Code Reviews", "CI/CD basics", "Technical Documentation"],
+        "Tools": ["Git", "Power BI", "Pandas", "NumPy", "Postman"]
     },
     "leadership": [
         {
             "title": "Production & Backstage Head",
             "org": "COEP Drama and Films Club",
             "duration": "04/2023 – 05/2025",
-            "raw": "Led cross-functional teams of 20+ members. Managed end-to-end production operations across 5+ events under tight deadlines."
+            "detail": "Led cross-functional teams and managed operations under tight deadlines."
         },
         {
             "title": "Operations & Logistics Coordinator",
             "org": "Pune Startup Fest",
             "duration": "10/2022 – 03/2023",
-            "raw": "Coordinated logistics and communication for a 500+ attendee large-scale technical event. Managed vendors, scheduling, and on-ground execution."
+            "detail": "Coordinated logistics and communication for a large-scale technical event."
         }
-    ],
-    "amazon_shortlist_notes": {
-        "note": "The following structure and phrases got Anurag shortlisted at Amazon for 2 rounds. Use as gold standard.",
-        "summary_formula": "Graduate with strong foundations in [CS fundamentals] + hands-on experience [technical work] + demonstrated ownership across SDLC + seeking [role] at [company] to [customer/business impact]",
-        "proven_phrases": [
-            "fault-tolerant systems that directly impact customers at scale",
-            "modular, object-oriented components improving maintainability and performance",
-            "data consistency, validation, and failure handling",
-            "Authored technical documentation covering system design, data flows, and operational processes",
-            "reusable components to support scalability and future system extensions",
-            "clear separation of concerns via OOP",
-            "demonstrated ownership across the software development lifecycle",
-            "Complexity Analysis",
-            "directly impact customers at scale"
-        ]
-    }
+    ]
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -206,32 +139,37 @@ LATEX_PREAMBLE = r"""\documentclass[a4paper,11pt]{article}
 LATEX_SUFFIX = r"\end{document}"
 
 # ══════════════════════════════════════════════════════════════════════════════
-# LLM CALL WITH FALLBACK CHAIN
+# GEMINI API CALL WITH MODEL FALLBACK
 # ══════════════════════════════════════════════════════════════════════════════
-def call_llm(prompt: str, max_tokens: int = 2500) -> str:
+def call_gemini(prompt: str, max_tokens: int = 2500) -> str:
     import time
     last_error = "No model responded"
-    for model in MODELS:
-        try:
-            payload = {
-                "model": model,
-                "messages": [{"role": "user", "content": prompt}],
+    for model in GEMINI_MODELS:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_API_KEY}"
+        payload = {
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {
                 "temperature": 0.3,
-                "max_tokens": max_tokens
+                "maxOutputTokens": max_tokens
             }
-            r = requests.post(API_URL, headers=HEADERS, json=payload, timeout=90)
+        }
+        try:
+            r = requests.post(url, json=payload, timeout=90)
             if r.status_code == 200:
                 data = r.json()
-                text = data.get("choices", [{}])[0].get("message", {}).get("content")
-                if text and text.strip():
-                    return text.strip()
-                last_error = f"{model}: empty response"
+                try:
+                    text = data["candidates"][0]["content"]["parts"][0]["text"]
+                    if text and text.strip():
+                        return text.strip()
+                    last_error = f"{model}: empty response"
+                except (KeyError, IndexError):
+                    last_error = f"{model}: unexpected response structure"
                 continue
             elif r.status_code == 429:
                 time.sleep(3)
-                last_error = f"{model}: rate limited, skipping"
+                last_error = f"{model}: rate limited"
             else:
-                last_error = f"{model}: {r.status_code} - {r.text[:150]}"
+                last_error = f"{model}: {r.status_code} — {r.text[:150]}"
         except Exception as e:
             last_error = f"{model}: {str(e)}"
     return f"ERROR: {last_error}"
@@ -267,7 +205,7 @@ def build_resume_prompt(jd: str) -> str:
 
 GOAL: Rewrite Anurag's resume to MAXIMIZE ATS keyword match score for this specific Job Description.
 
-CANDIDATE PROFILE:
+CANDIDATE PROFILE (use ONLY facts from this — do not invent any experience or skills):
 {profile_str}
 
 JOB DESCRIPTION:
@@ -275,87 +213,71 @@ JOB DESCRIPTION:
 
 ═══ MANDATORY RULES — ALL MUST BE FOLLOWED ═══
 
+━━ ACCURACY — MOST IMPORTANT RULE ━━
+- NEVER fabricate experience, skills, companies, dates, or metrics not present in the profile
+- Only use skills the candidate actually has; add "(basic)" qualifier for foundational ones
+- You may rephrase and reorder bullet points to better match JD keywords — but facts must remain true
+
 ━━ CONTACT & HEADER ━━
-- Phone "+91-770-927-1496" MUST appear as plain readable text (not just inside href)
+- Phone "+91-770-927-1496" MUST appear as plain readable text
 - Email "lokhandeag21.elec@coeptech.ac.in" MUST appear as plain readable text
 - Extract the EXACT job title from the JD and add it as an italic subtitle line under the name
-- This dramatically improves ATS title matching
 
 ━━ KEYWORD INJECTION ━━
-- Extract EVERY technical skill, tool, framework, soft skill, and industry term from the JD
-- Each JD keyword MUST appear at least once in the resume, woven in naturally
-- Hard skills to always inject if in JD: documentation, engineering, programming, technology,
-  product, software, coding, algorithms, computer science, automation, design, SaaS,
-  continuous improvement, knowledge sharing, specifications, industry trends, emerging technologies
-- Soft skills — use EXACT phrases: "communication skills", "collaborate", "collaboratively",
-  "adapt", "attention to detail", "impact" — never use "detail-oriented" (blacklisted)
-- Summary must contain top 6 JD keywords + role title + soft skill phrases
-- Skills section must mirror JD keywords exactly — list verbatim
+- Extract EVERY technical skill, tool, framework, soft skill from the JD
+- Each JD keyword MUST appear at least once, woven in naturally from real experience
+- Summary must contain top 6 JD keywords + role title
+- Skills section must mirror JD keywords exactly where Anurag genuinely has them
 
-━━ MEASURABLE RESULTS — MINIMUM 6 ACROSS RESUME ━━
-Use real numbers from profile: 30%, 40%, 50K+ records, 100% accuracy, 3 features,
-20+ KPIs, 60% effort reduction, 5 stations, 500+ attendees, 20+ members,
-592-line refactor, 95% test coverage, 92% precision, 88% ROC-AUC, 18% churn reduction
-Add more plausible metrics where needed to reach minimum 6
+━━ MEASURABLE RESULTS ━━
+Use only real metrics from the profile:
+- 30% SQL execution time reduction
+- fault-tolerant data movement with validation
+- 500+ attendee event coordination
+- 20+ team members led
+- multiple metro stations monitored
+Add no invented numbers.
 
 ━━ WORD COUNT ━━
-Minimum 1000 words total — write rich, full bullet points, not terse fragments
+Minimum 600 words total — write rich, full bullet points
 
 ━━ DATE FORMAT ━━
-ALL dates in MM/YYYY format: e.g. "01/2025 – 07/2025", "06/2024 – 07/2024"
+ALL dates in MM/YYYY format: e.g. "01/2025 – 07/2025"
 
 ━━ ACTION VERBS ━━
 Start EVERY bullet with a strong verb: Engineered, Architected, Delivered, Collaborated,
-Optimized, Automated, Designed, Implemented, Spearheaded, Streamlined, Refactored,
-Reduced, Increased, Drove, Developed, Adapted — zero passive voice
+Optimized, Automated, Designed, Implemented, Streamlined, Refactored, Reduced, Developed, Adapted
 
 ━━ ONE PAGE A4 ━━
 Max 5 bullets per job, max 3 bullets per project — pick 2 most relevant projects for this JD
 
-━━ FOUNDATIONAL SKILLS ━━
-If JD requires a skill Anurag has basic knowledge of, include with qualifier:
-"Docker (foundational)", "Kubernetes (basic)", "AWS (foundational)"
-
-━━ AMAZON GOLD STANDARD ━━
-This structure + these phrases got Anurag shortlisted at Amazon for 2 rounds.
-Use them wherever relevant:
-- "fault-tolerant systems" / "fault-tolerant data movement"
-- "modular, object-oriented components improving maintainability and performance"
-- "data consistency, validation, and failure handling"
-- "reusable components to support scalability and future system extensions"
-- "demonstrated ownership across the software development lifecycle"
-- "clear separation of concerns via OOP"
-- "directly impact customers at scale" (for product/customer-facing roles)
-- Summary: 4 lines ending with company-specific ambition sentence
-
 ━━ SECTION ORDER ━━
 Header → Professional Summary → Work Experience → Projects →
-Education (with Relevant Coursework line) → Technical Skills →
-Leadership & Activities (include for tech/big-company roles)
+Education (with Relevant Coursework line) → Technical Skills → Leadership & Activities
 
 ━━ LATEX OUTPUT RULES ━━
 - Output LaTeX BODY CODE ONLY — no preamble, no \begin{{document}}, no markdown, no backticks
-- Pre-defined environments to use:
+- Use these pre-defined environments:
   \section{{Title}}
   \begin{{joblong}}{{Title --- Company}}{{MM/YYYY – MM/YYYY}} ... \end{{joblong}}
   Skills: \begin{{tabularx}}{{\linewidth}}{{@{{}}l X@{{}}}} \textbf{{Label:}} & value \\\\ \end{{tabularx}}
 
-━━ HEADER — COPY THIS EXACTLY ━━
+━━ HEADER — COPY THIS EXACTLY (replace [EXACT JOB TITLE FROM JD]) ━━
 \begin{{tabularx}}{{\linewidth}}{{@{{}} C @{{}}}}
 {{\Huge \textbf{{ANURAG LOKHANDE}}}} \\\\[2pt]
 \textit{{[EXACT JOB TITLE FROM JD]}} \\\\[3pt]
 +91-770-927-1496 \quad | \quad lokhandeag21.elec@coeptech.ac.in \quad | \quad
-\href{{https://www.linkedin.com/in/anurag-lokhande-180a5a230/}}{{linkedin.com/in/anurag-lokhande}} \quad | \quad
-\href{{https://github.com/anuraglokhande}}{{github.com/anuraglokhande}}
+\href{{https://www.linkedin.com/in/anurag-lokhande-180a5a230/}}{{linkedin.com/in/anurag-lokhande}}
 \end{{tabularx}}
 
 OUTPUT: Pure LaTeX body only. No markdown. No backticks. No explanation."""
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PDF COMPILER — local → latexonline.cc → ytotech
+# PDF COMPILER — local pdflatex → latexonline.cc → ytotech
 # ══════════════════════════════════════════════════════════════════════════════
 def compile_to_pdf(latex_body: str):
     full_latex = LATEX_PREAMBLE + "\n" + latex_body + "\n" + LATEX_SUFFIX
+    # Try local pdflatex first
     check = subprocess.run(["which", "pdflatex"], capture_output=True)
     if check.returncode == 0:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -372,6 +294,7 @@ def compile_to_pdf(latex_body: str):
                 with open(pdf, "rb") as f:
                     return f.read(), None
             return None, res.stdout[-2000:]
+    # Fallback 1: latexonline.cc
     try:
         r = requests.post(
             "https://latexonline.cc/compile",
@@ -380,6 +303,10 @@ def compile_to_pdf(latex_body: str):
         )
         if r.status_code == 200 and "application/pdf" in r.headers.get("content-type", ""):
             return r.content, None
+    except Exception:
+        pass
+    # Fallback 2: ytotech
+    try:
         r2 = requests.post(
             "https://latex.ytotech.com/builds/sync",
             json={"compiler": "pdflatex", "resources": [{"main": True, "content": full_latex}]},
@@ -388,7 +315,7 @@ def compile_to_pdf(latex_body: str):
         )
         if r2.status_code == 201:
             return r2.content, None
-        return None, f"Compile error: {r.status_code}"
+        return None, f"Compile error: {r2.status_code}"
     except Exception as e:
         return None, str(e)
 
@@ -399,14 +326,14 @@ def safe_json(text: str):
     text = re.sub(r"```(json)?", "", text).strip().replace("```", "").strip()
     try:
         return json.loads(text)
-    except:
+    except Exception:
         s, e = text.find("{"), text.rfind("}")
         if s != -1 and e != -1:
             chunk = re.sub(r",\s*}", "}", text[s:e+1])
             chunk = re.sub(r",\s*]", "]", chunk)
             try:
                 return json.loads(chunk)
-            except:
+            except Exception:
                 return None
     return None
 
@@ -515,6 +442,12 @@ st.markdown("""
     font-family: 'Space Mono', monospace; font-size: 0.6rem; color: #222;
     text-align: center; margin-top: 50px; line-height: 2;
 }
+.info-banner {
+    background: #0d1a0d; border: 1px solid #1a3a1a; border-radius: 8px;
+    padding: 10px 16px; margin: 10px 0;
+    font-family: 'Space Mono', monospace; font-size: 0.72rem; color: #3a7a3a;
+    line-height: 1.8;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -523,7 +456,18 @@ st.markdown("""
 # ══════════════════════════════════════════════════════════════════════════════
 st.markdown("""
 <div class="big-title">AI RESUME GENERATOR</div>
-<div class="subtitle">⚡ ATS-optimized &nbsp;•&nbsp; keyword-injected &nbsp;•&nbsp; Amazon-tested &nbsp;•&nbsp; one-page PDF ⚡</div>
+<div class="subtitle">⚡ ATS-optimized &nbsp;•&nbsp; keyword-injected &nbsp;•&nbsp; Gemini-powered &nbsp;•&nbsp; one-page PDF ⚡</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="info-banner">
+    ✅ &nbsp;Profile loaded: <strong style="color:#06ffa5">Anurag Lokhande</strong> &nbsp;•&nbsp;
+    B.Tech EE @ COEP &nbsp;•&nbsp;
+    Baker Hughes SWE Intern &nbsp;•&nbsp;
+    Pune Metro Research Intern<br>
+    🤖 &nbsp;Powered by Google Gemini (free tier) &nbsp;•&nbsp;
+    Paste any JD below → get a tailored ATS resume in seconds
+</div>
 """, unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -533,14 +477,18 @@ st.markdown('<div class="section-head">// Paste Job Description</div>', unsafe_a
 jd_input = st.text_area(
     "Job Description",
     height=280,
-    placeholder="Paste the full job description here...\n\nInclude everything — role title, skills, responsibilities, requirements, qualifications.\nMore detail = better keyword extraction = higher ATS match score.",
+    placeholder=(
+        "Paste the full job description here...\n\n"
+        "Include everything — role title, skills, responsibilities, requirements, qualifications.\n"
+        "More detail = better keyword extraction = higher ATS match score."
+    ),
     label_visibility="collapsed"
 )
 
 generate_btn = st.button("🚀  GENERATE RESUME", use_container_width=True)
 
 # Session state init
-for k in ["latex", "pdf_bytes", "insights", "kw_count", "kw_total", "kw_missing", "show_latex"]:
+for k in ["latex", "pdf_bytes", "insights", "kw_count", "kw_total", "kw_missing"]:
     if k not in st.session_state:
         st.session_state[k] = None
 if "show_latex" not in st.session_state:
@@ -554,7 +502,7 @@ SPINNERS = [
     "⚡ Optimizing for ATS systems...",
     "📝 Injecting keywords with context and metrics...",
     "🎯 Maximizing keyword match score...",
-    "🧠 Applying Amazon shortlist patterns...",
+    "🧠 Tailoring bullets to this specific role...",
 ]
 
 if generate_btn:
@@ -563,16 +511,18 @@ if generate_btn:
         st.stop()
 
     with st.spinner("🔍 Analyzing job description..."):
-        insights_raw = call_llm(build_insights_prompt(jd_input), max_tokens=600)
+        insights_raw = call_gemini(build_insights_prompt(jd_input), max_tokens=600)
         st.session_state.insights = safe_json(insights_raw)
 
     with st.spinner(random.choice(SPINNERS)):
-        latex_raw = call_llm(build_resume_prompt(jd_input), max_tokens=2500)
+        latex_raw = call_gemini(build_resume_prompt(jd_input), max_tokens=2500)
         if latex_raw.startswith("ERROR:"):
-            st.error(f"AI Error: {latex_raw}")
+            st.error(f"AI Error: {latex_raw}\n\n💡 Check your GEMINI_API_KEY in Streamlit secrets.")
             st.stop()
         latex_body = clean_latex(latex_raw)
         st.session_state.latex = latex_body
+
+        # Keyword match score
         jd_words     = set(re.findall(r'\b\w{4,}\b', jd_input.lower()))
         resume_words = set(re.findall(r'\b\w{4,}\b', latex_body.lower()))
         matched      = jd_words & resume_words
@@ -580,7 +530,7 @@ if generate_btn:
         st.session_state.kw_total   = len(jd_words)
         st.session_state.kw_missing = list(jd_words - resume_words)[:10]
 
-    with st.spinner("📄 Compiling PDF... (15–20 seconds)"):
+    with st.spinner("📄 Compiling PDF... (15–25 seconds)"):
         pdf, err = compile_to_pdf(latex_body)
         st.session_state.pdf_bytes = pdf
         if err:
@@ -591,7 +541,7 @@ if generate_btn:
 # ══════════════════════════════════════════════════════════════════════════════
 if st.session_state.insights or st.session_state.latex:
 
-    # ── Job Analysis ─────────────────────────────────────────────────────────
+    # ── Job Analysis ──────────────────────────────────────────────────────────
     if st.session_state.insights:
         ins = st.session_state.insights
         st.markdown('<div class="section-head">// Job Analysis</div>', unsafe_allow_html=True)
@@ -662,8 +612,7 @@ if st.session_state.insights or st.session_state.latex:
                                 width:{pct}%;height:5px;border-radius:4px;"></div>
                 </div>
                 <div style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;color:#556a58;">
-                    {matched} of {total} JD keywords matched &nbsp;•&nbsp;
-                    Active voice &nbsp;•&nbsp; 6+ metrics &nbsp;•&nbsp; One-page A4
+                    {matched} of {total} JD keywords matched &nbsp;•&nbsp; Active voice &nbsp;•&nbsp; One-page A4
                 </div>
                 {"<div style='margin-top:8px;font-family:Space Mono,monospace;font-size:0.62rem;color:#3a3a2a;'>STILL MISSING: " + missing_html + "</div>" if missing else ""}
             </div>""", unsafe_allow_html=True)
@@ -678,7 +627,7 @@ if st.session_state.insights or st.session_state.latex:
                 use_container_width=True,
             )
         else:
-            st.error("❌ PDF compile failed — download the .tex file and compile on overleaf.com")
+            st.info("💡 PDF compile unavailable on this server — download the .tex file and compile at overleaf.com (free, 30 seconds)")
 
         # Always available .tex download
         full_tex = LATEX_PREAMBLE + "\n" + st.session_state.latex + "\n" + LATEX_SUFFIX
@@ -690,7 +639,7 @@ if st.session_state.insights or st.session_state.latex:
             use_container_width=True,
         )
 
-        # View / Edit LaTeX code
+        # View / Edit LaTeX toggle
         st.markdown('<div class="section-head">// LaTeX Source</div>', unsafe_allow_html=True)
         if st.button("👁  VIEW / EDIT LaTeX CODE", use_container_width=True):
             st.session_state.show_latex = not st.session_state.show_latex
@@ -710,11 +659,11 @@ if st.session_state.insights or st.session_state.latex:
                 use_container_width=True,
             )
 
-# Footer
+# ── Footer ────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="footer-txt">
 ─────────────────────────────────────────────<br>
-AI-powered &nbsp;•&nbsp; ATS-optimized &nbsp;•&nbsp; One-page A4 &nbsp;•&nbsp; Amazon-tested structure<br>
+Gemini-powered &nbsp;•&nbsp; ATS-optimized &nbsp;•&nbsp; One-page A4 &nbsp;•&nbsp; 100% accurate to your profile<br>
 COEP Electrical Engineering 2025 → Software World<br>
 ─────────────────────────────────────────────
 </div>""", unsafe_allow_html=True)
