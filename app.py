@@ -11,11 +11,11 @@ import random
 # CONFIG — Google Gemini API (Free Tier)
 # ══════════════════════════════════════════════════════════════════════════════
 GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
-# Gemini free models in priority order
+# Gemini free models in priority order (verified working, March 2026)
 GEMINI_MODELS = [
-    "gemini-2.0-flash",
-    "gemini-1.5-flash",
-    "gemini-1.5-flash-8b",
+    "gemini-2.0-flash-lite",   # fastest, free, most available
+    "gemini-2.0-flash",        # slightly larger, also free
+    "gemini-1.5-flash",        # stable fallback
 ]
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -145,7 +145,7 @@ def call_gemini(prompt: str, max_tokens: int = 2500) -> str:
     import time
     last_error = "No model responded"
     for model in GEMINI_MODELS:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_API_KEY}"
+        url = f"https://generativelanguage.googleapis.com/v1/models/{model}:generateContent?key={GEMINI_API_KEY}"
         payload = {
             "contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": {
